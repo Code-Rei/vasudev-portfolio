@@ -43,6 +43,12 @@ onMounted(() => {
 const scrollToContact = () => {
   document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
 };
+
+const isMenuOpen = ref(false);
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+  document.body.style.overflow = isMenuOpen.value ? 'hidden' : '';
+};
 </script>
 
 <template>
@@ -50,7 +56,9 @@ const scrollToContact = () => {
     <header class="header">
       <div class="container flex-between">
         <div class="nav-logo"></div>
-        <nav>
+        
+        <!-- Desktop Nav -->
+        <nav class="desktop-nav">
           <ul class="nav-links">
             <li><a href="#about" class="nav-link">About</a></li>
             <li><a href="#skills" class="nav-link">Skills</a></li>
@@ -59,6 +67,24 @@ const scrollToContact = () => {
             <li><a href="#contact" class="nav-link">Contact</a></li>
           </ul>
         </nav>
+
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" @click="toggleMenu" aria-label="Toggle Menu">
+          <span :class="{ 'open': isMenuOpen }"></span>
+          <span :class="{ 'open': isMenuOpen }"></span>
+          <span :class="{ 'open': isMenuOpen }"></span>
+        </button>
+
+        <!-- Mobile Nav Overlay -->
+        <div class="mobile-nav" :class="{ 'open': isMenuOpen }">
+          <ul class="mobile-nav-links">
+            <li><a href="#about" class="nav-link" @click="toggleMenu">About</a></li>
+            <li><a href="#skills" class="nav-link" @click="toggleMenu">Skills</a></li>
+            <li><a href="#experience" class="nav-link" @click="toggleMenu">Experience</a></li>
+            <li><a href="#projects" class="nav-link" @click="toggleMenu">Projects</a></li>
+            <li><a href="#contact" class="nav-link" @click="toggleMenu">Contact</a></li>
+          </ul>
+        </div>
       </div>
     </header>
 
