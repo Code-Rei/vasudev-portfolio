@@ -1,80 +1,203 @@
 <script setup>
-defineProps({
-  data: Object
+import { ref, onMounted } from 'vue';
+import gsap from 'gsap';
+
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true
+  }
 });
+
 defineEmits(['contact']);
+
+const containerRef = ref(null);
+const isAssembled = ref(false);
+const hasInteracted = ref(false);
+
+const handleMouseMove = (e) => {
+  if (!containerRef.value) return;
+
+  // Calculate mouse coordinates relative to container
+  const rect = containerRef.value.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  containerRef.value.style.setProperty('--mouse-x', `${x}px`);
+  containerRef.value.style.setProperty('--mouse-y', `${y}px`);
+
+  // Trigger assembly chain reaction on first cursor wake-up
+  if (!hasInteracted.value) {
+    hasInteracted.value = true;
+    assembleComponents();
+  }
+};
+
+const assembleComponents = () => {
+  isAssembled.value = true;
+  
+  // Staggered chain reaction assembly (0.15s stagger)
+  gsap.to('.bento-item', {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    duration: 0.65,
+    stagger: 0.15,
+    ease: 'back.out(1.3)',
+    overwrite: 'auto'
+  });
+};
+
+onMounted(() => {
+  // Set initial wireframe / hidden state
+  gsap.set('.bento-item', {
+    opacity: 0,
+    scale: 0.9,
+    y: 12
+  });
+
+  // Fallback timer: if user doesn't move mouse within 1.5s, assemble automatically so mobile / touch users see the UI
+  setTimeout(() => {
+    if (!hasInteracted.value) {
+      assembleComponents();
+    }
+  }, 1500);
+});
 </script>
 
 <template>
-  <section id="about" class="hero container">
-    <!-- Google Stitch Workspace Canvas Frame -->
-    <div class="stitch-bounding-frame">
-      <!-- Stitch Header Bar -->
-      <div class="stitch-canvas-header">
-        <div class="stitch-pill-left">
-          <span class="stitch-dot-grid">⠿</span>
-          <span class="stitch-canvas-title">Workspace: Vasudev_Yadav_Portfolio.stitch</span>
-          <span class="stitch-badge-mode">EDIT MODE</span>
-        </div>
-        <div class="stitch-collaborators-bar">
-          <span class="collab-count">4 Collaborators Active</span>
-          <div class="collab-avatars">
-            <span class="collab-avatar" style="--c-color: #22C55E" title="Vasudev (Product Owner)">VY</span>
-            <span class="collab-avatar" style="--c-color: #8B5CF6" title="AI Co-pilot (Vision/Code)">AI</span>
-            <span class="collab-avatar" style="--c-color: #38BDF8" title="Lead Dev (.NET/SQL)">DL</span>
-            <span class="collab-avatar" style="--c-color: #F59E0B" title="UI/UX Designer (Figma)">UX</span>
+  <section
+    id="about"
+    ref="containerRef"
+    class="bento-hero-section container"
+    @mousemove="handleMouseMove"
+  >
+    <!-- Interactive Flashlight / Radial Spotlight Layer -->
+    <div class="flashlight-overlay" aria-hidden="true"></div>
+
+    <!-- Wireframe Wake-up Hint (fades out after first interaction) -->
+    <div class="wake-up-indicator" :class="{ 'faded': hasInteracted }">
+      <span class="pulse-beacon"></span>
+      <span class="hint-text">Move cursor to wake up and assemble the workspace</span>
+    </div>
+
+    <!-- Bento Box Grid (5-6 Portfolio Components) -->
+    <div class="bento-grid">
+      <!-- Component 1: Primary Identity & About (Spans 2 columns) -->
+      <div class="bento-item bento-card bento-card-main">
+        <div class="card-glow-border"></div>
+        <div class="card-inner">
+          <div class="status-pill-row">
+            <span class="mono-badge">PO & TECH BA</span>
+            <span class="location-badge">Kota, RJ</span>
+            <span class="live-status">
+              <span class="live-dot"></span> Available for Product Roles
+            </span>
+          </div>
+
+          <h1 class="main-title">{{ data.personalDetails.name }}</h1>
+          <h2 class="sub-role">{{ data.personalDetails.title }}</h2>
+
+          <p class="about-summary">
+            Pairs front-line operational leadership (led <strong>76 staff across 36 branches</strong>) with hands-on product design in Figma, practical SQL, and developer sprint orchestration. Rapidly prototypes working microservices with AI.
+          </p>
+
+          <div class="pill-tag-group">
+            <span class="zinc-pill">Figma Wireframing</span>
+            <span class="zinc-pill">BRD / PRD</span>
+            <span class="zinc-pill">Practical SQL</span>
+            <span class="zinc-pill">AI-Native MVPs</span>
           </div>
         </div>
       </div>
 
-      <!-- Selection Bounding Box with Figma-like anchor handles -->
-      <div class="stitch-selection-box">
-        <div class="stitch-handle top-left"></div>
-        <div class="stitch-handle top-right"></div>
-        <div class="stitch-handle bottom-left"></div>
-        <div class="stitch-handle bottom-right"></div>
-        <div class="stitch-tag-label">Frame 01: Master_Identity (Auto-Layout)</div>
-
-        <div class="hero-content">
-          <div class="role-pill-group">
-            <span class="role-pill-primary">
-              <span class="sparkle">✦</span> {{ data.personalDetails.title }}
-            </span>
-            <span class="role-pill-secondary">
-              📍 {{ data.personalDetails.location }}
-            </span>
+      <!-- Component 2: Field Scale Metric (Card 2) -->
+      <div class="bento-item bento-card bento-card-stat">
+        <div class="card-glow-border"></div>
+        <div class="card-inner">
+          <div class="stat-top">
+            <span class="stat-icon">🏢</span>
+            <span class="stat-tag">GROUND OPERATIONS</span>
           </div>
+          <div class="stat-number">76 Staff</div>
+          <div class="stat-label">36 Branches Managed</div>
+          <p class="stat-desc">
+            Direct leadership over loan disbursements, delinquency (OD buckets), and YES Bank BC compliance.
+          </p>
+        </div>
+      </div>
 
-          <h1 class="hero-title">{{ data.personalDetails.name }}</h1>
-          <h2 class="hero-tagline">{{ data.personalDetails.tagline }}</h2>
-
-          <p class="hero-description">{{ data.summary }}</p>
-
-          <!-- Core Value Proof Strip -->
-          <div class="proof-strip">
-            <div class="proof-item">
-              <span class="proof-icon">🏢</span>
-              <span><strong>36 Branches Led</strong> in Field MFI Operations</span>
-            </div>
-            <div class="proof-item">
-              <span class="proof-icon">🚀</span>
-              <span><strong>4–6 Devs Guided</strong> on White-Label SaaS</span>
-            </div>
-            <div class="proof-item">
-              <span class="proof-icon">⚡</span>
-              <span><strong>AI Prototyper</strong> (Go, n8n, Spatial Routing)</span>
-            </div>
+      <!-- Component 3: Product Speed Metric (Card 3) -->
+      <div class="bento-item bento-card bento-card-stat">
+        <div class="card-glow-border"></div>
+        <div class="card-inner">
+          <div class="stat-top">
+            <span class="stat-icon">⚡</span>
+            <span class="stat-tag">PRODUCT SPEED</span>
           </div>
+          <div class="stat-number">>40%</div>
+          <div class="stat-label">Turnaround Reduction</div>
+          <p class="stat-desc">
+            Cut insurance claim and KYC processing times via automated pre-filled forms and single-file uploads.
+          </p>
+        </div>
+      </div>
 
-          <!-- CTAs -->
-          <div class="hero-cta-group">
-            <a href="#projects" class="btn btn-primary">
-              Explore Enterprise SaaS & Prototypes ➔
-            </a>
-            <button @click="$emit('contact')" class="btn btn-secondary">
-              Direct Contact
+      <!-- Component 4: Flagship Project Card (Card 4 - Spans 2 columns) -->
+      <div class="bento-item bento-card bento-card-feature">
+        <div class="card-glow-border"></div>
+        <div class="card-inner">
+          <div class="project-header">
+            <span class="feature-tag">FLAGSHIP PLATFORM</span>
+            <span class="tech-tag-row">.NET Core • Angular • React Native</span>
+          </div>
+          <h3 class="feature-title">Fieldmate+</h3>
+          <p class="feature-desc">
+            White-label collection & field ops SaaS for NBFCs and MFIs. Features Android LO app with geo-tagged selfie attendance, real-time UPI QR collections, and floating cash-lock rules.
+          </p>
+          <div class="feature-meta">
+            <span>Guided 4 Developers + 1 QA</span>
+            <a href="#projects" class="feature-link">View Specs ➔</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Component 5: AI Prototyping Showcase (Card 5) -->
+      <div class="bento-item bento-card bento-card-ai">
+        <div class="card-glow-border"></div>
+        <div class="card-inner">
+          <div class="ai-header">
+            <span class="feature-tag">AI-NATIVE PROTOTYPE</span>
+            <span class="go-badge">Go 1.22</span>
+          </div>
+          <h3 class="ai-title">GST Vision AI Solver</h3>
+          <p class="ai-desc">
+            Solves tax portal CAPTCHAs via Gemma Multimodal Vision AI with cookiejar session persistence.
+          </p>
+          <div class="ai-footer">
+            <span class="docker-badge">Docker Sub-25MB</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Component 6: Contact & Interaction Hub (Card 6) -->
+      <div class="bento-item bento-card bento-card-cta">
+        <div class="card-glow-border"></div>
+        <div class="card-inner cta-inner">
+          <div class="cta-text">
+            <span class="cta-pre">READY TO COLLABORATE?</span>
+            <h3 class="cta-title">Let's Build Impact</h3>
+          </div>
+          <div class="cta-action-row">
+            <button @click="$emit('contact')" class="btn-dark-primary">
+              Get In Touch ➔
             </button>
-            <a :href="data.personalDetails.linkedinUrl" target="_blank" rel="noopener" class="btn btn-ghost">
+            <a
+              :href="data.personalDetails.linkedinUrl"
+              target="_blank"
+              rel="noopener"
+              class="btn-dark-secondary"
+            >
               LinkedIn ↗
             </a>
           </div>
@@ -85,308 +208,468 @@ defineEmits(['contact']);
 </template>
 
 <style scoped>
-.hero {
+.bento-hero-section {
   min-height: 90vh;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
   padding-top: 6rem;
-  padding-bottom: 3rem;
+  padding-bottom: 4rem;
   position: relative;
+  --mouse-x: -500px;
+  --mouse-y: -500px;
 }
 
-/* Google Stitch Master Canvas Frame */
-.stitch-bounding-frame {
+/* Flashlight / Radial Border Glow Spotlight */
+.flashlight-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-width: 1200px;
-  background: rgba(13, 23, 18, 0.65);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 18px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(34, 197, 94, 0.05);
-  overflow: hidden;
-  position: relative;
+  height: 100%;
+  pointer-events: none;
+  background: radial-gradient(
+    600px circle at var(--mouse-x) var(--mouse-y),
+    rgba(255, 255, 255, 0.06),
+    transparent 45%
+  );
+  z-index: 1;
 }
 
-/* Canvas Header Bar */
-.stitch-canvas-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px;
-  background: rgba(8, 14, 10, 0.85);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  font-family: var(--font-main);
-}
-
-.stitch-pill-left {
+/* Wake-up Hint */
+.wake-up-indicator {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-.stitch-dot-grid {
-  color: var(--color-mint);
-  font-size: 1.1rem;
-}
-
-.stitch-canvas-title {
-  color: #94A3B8;
+  margin-bottom: 1.5rem;
   font-size: 0.82rem;
-  font-weight: 500;
+  color: var(--text-muted);
+  font-family: var(--font-main);
+  transition: opacity 0.5s ease;
+}
+
+.wake-up-indicator.faded {
+  opacity: 0.35;
+}
+
+.pulse-beacon {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  animation: beacon-pulse 2s infinite;
+}
+
+@keyframes beacon-pulse {
+  0% { transform: scale(0.9); opacity: 0.4; }
+  50% { transform: scale(1.4); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.4; }
+}
+
+/* Bento CSS Grid */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  position: relative;
+  z-index: 2;
+}
+
+/* Bento Card Base (Initial Wireframe State) */
+.bento-card {
+  background: #09090b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+  will-change: transform, opacity;
+}
+
+/* Dynamic Spotlight Border Highlight */
+.bento-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: radial-gradient(
+    400px circle at var(--mouse-x) var(--mouse-y),
+    rgba(255, 255, 255, 0.15),
+    transparent 50%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.bento-hero-section:hover .bento-card::before {
+  opacity: 1;
+}
+
+.bento-card:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-2px);
+}
+
+.card-inner {
+  position: relative;
+  z-index: 3;
+  padding: 26px 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Component 1: Main About Card */
+.bento-card-main {
+  grid-column: span 2;
+  background: linear-gradient(145deg, #0d0d10 0%, #09090b 100%);
+}
+
+.status-pill-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.mono-badge {
+  font-family: monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  padding: 2px 8px;
+  border-radius: 4px;
   letter-spacing: 0.5px;
 }
 
-.stitch-badge-mode {
-  background: rgba(34, 197, 94, 0.15);
-  color: var(--color-mint);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  font-size: 0.68rem;
+.location-badge {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.live-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: #A1A1AA;
+  margin-left: auto;
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+.main-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: #FFFFFF;
+  line-height: 1.1;
+  margin-bottom: 0.3rem;
+}
+
+.sub-role {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font-main);
+  margin-bottom: 1rem;
+}
+
+.about-summary {
+  font-size: 0.98rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  max-width: 650px;
+}
+
+.about-summary strong {
+  color: #FFFFFF;
+}
+
+.pill-tag-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.zinc-pill {
+  font-size: 0.78rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #D4D4D8;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+/* Component 2 & 3: Stat Cards */
+.bento-card-stat {
+  background: #09090b;
+}
+
+.stat-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1.2rem;
+}
+
+.stat-icon {
+  font-size: 1.1rem;
+}
+
+.stat-tag {
+  font-size: 0.7rem;
   font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+}
+
+.stat-number {
+  font-family: var(--font-heading);
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1;
+  margin-bottom: 0.4rem;
+}
+
+.stat-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #E4E4E7;
+  margin-bottom: 0.6rem;
+}
+
+.stat-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Component 4: Flagship Feature Card (Span 2) */
+.bento-card-feature {
+  grid-column: span 2;
+  background: linear-gradient(145deg, #0d0d10 0%, #09090b 100%);
+}
+
+.project-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.feature-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #A1A1AA;
+}
+
+.tech-tag-row {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.feature-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 0.5rem;
+}
+
+.feature-desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.2rem;
+  max-width: 680px;
+}
+
+.feature-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 0.8rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.feature-link {
+  color: #FFFFFF;
+  font-weight: 600;
+  transition: transform 0.2s ease;
+}
+
+.feature-link:hover {
+  transform: translateX(3px);
+}
+
+/* Component 5: AI Showcase */
+.bento-card-ai {
+  background: #09090b;
+}
+
+.ai-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.go-badge {
+  font-size: 0.72rem;
+  font-family: monospace;
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.ai-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 0.4rem;
+}
+
+.ai-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.2rem;
+}
+
+.ai-footer {
+  margin-top: auto;
+}
+
+.docker-badge {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 2px 6px;
   border-radius: 4px;
 }
 
-.stitch-collaborators-bar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.collab-count {
-  font-size: 0.75rem;
-  color: #64748B;
-}
-
-.collab-avatars {
+/* Component 6: CTA Card */
+.bento-card-cta {
+  background: #111113;
   display: flex;
   align-items: center;
 }
 
-.collab-avatar {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--c-color);
-  color: #080E0A;
-  font-weight: 800;
-  font-size: 0.7rem;
-  display: flex;
-  align-items: center;
+.cta-inner {
   justify-content: center;
-  margin-left: -6px;
-  border: 2px solid #0D1712;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  gap: 1.2rem;
+  text-align: center;
+  width: 100%;
 }
 
-/* Stitch Selection Box with Figma Handles */
-.stitch-selection-box {
-  padding: 40px;
-  position: relative;
-  border: 1.5px dashed rgba(34, 197, 94, 0.35);
-  border-radius: 12px;
-  margin: 16px;
-  background: rgba(18, 32, 25, 0.45);
-}
-
-.stitch-handle {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background: #22C55E;
-  border: 1px solid #080E0A;
-}
-
-.stitch-handle.top-left { top: -4px; left: -4px; }
-.stitch-handle.top-right { top: -4px; right: -4px; }
-.stitch-handle.bottom-left { bottom: -4px; left: -4px; }
-.stitch-handle.bottom-right { bottom: -4px; right: -4px; }
-
-.stitch-tag-label {
-  position: absolute;
-  top: -12px;
-  left: 20px;
-  background: #22C55E;
-  color: #080E0A;
-  font-size: 0.68rem;
+.cta-pre {
+  font-size: 0.7rem;
   font-weight: 700;
-  padding: 1px 8px;
-  border-radius: 3px;
-  letter-spacing: 0.5px;
-  font-family: var(--font-main);
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+  display: block;
+  margin-bottom: 0.2rem;
 }
 
-.hero-content {
-  max-width: 900px;
-}
-
-.role-pill-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-}
-
-.role-pill-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: linear-gradient(135deg, rgba(163, 230, 53, 0.15), rgba(34, 197, 94, 0.15));
-  border: 1px solid rgba(34, 197, 94, 0.4);
-  color: var(--color-mint);
-  font-size: 0.85rem;
+.cta-title {
+  font-size: 1.4rem;
   font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 100px;
-  letter-spacing: 0.5px;
-}
-
-.sparkle {
-  color: #A3E635;
-}
-
-.role-pill-secondary {
-  color: #94A3B8;
-  font-size: 0.85rem;
-}
-
-.hero-title {
-  font-size: 4.5rem;
-  font-weight: 800;
-  line-height: 1.05;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #FFFFFF 0%, #A7F3D0 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: -1.5px;
-}
-
-.hero-tagline {
-  font-size: 1.6rem;
-  font-family: var(--font-main);
-  font-weight: 600;
-  color: #38BDF8;
-  margin-bottom: 1.5rem;
-  line-height: 1.4;
-}
-
-.hero-description {
-  font-size: 1.15rem;
-  color: #CBD5E1;
-  line-height: 1.8;
-  margin-bottom: 2rem;
-  max-width: 820px;
-}
-
-/* Proof Strip */
-.proof-strip {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  padding: 16px;
-  background: rgba(8, 14, 10, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  margin-bottom: 2.5rem;
-}
-
-.proof-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.95rem;
-  color: #E2E8F0;
-}
-
-.proof-icon {
-  font-size: 1.2rem;
-}
-
-.proof-item strong {
-  color: var(--color-mint);
-}
-
-/* Hero CTAs */
-.hero-cta-group {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.btn {
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid transparent;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #A3E635 0%, #22C55E 100%);
-  color: #080E0A;
-  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 26px rgba(34, 197, 94, 0.45);
-}
-
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.2);
   color: #FFFFFF;
 }
 
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.35);
+.cta-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-dark-primary {
+  background: #FFFFFF;
+  color: #000000;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid #FFFFFF;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-dark-primary:hover {
+  background: #E4E4E7;
   transform: translateY(-2px);
 }
 
-.btn-ghost {
-  background: transparent;
-  color: #94A3B8;
-  border-color: rgba(255, 255, 255, 0.1);
+.btn-dark-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #FFFFFF;
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.2s ease;
 }
 
-.btn-ghost:hover {
-  color: #38BDF8;
-  border-color: #38BDF8;
+.btn-dark-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
 }
 
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 2.8rem;
+@media (max-width: 990px) {
+  .bento-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
-  .hero-tagline {
-    font-size: 1.2rem;
+  .bento-card-main {
+    grid-column: span 2;
   }
-  .stitch-selection-box {
-    padding: 20px 14px;
-    margin: 8px;
+  .bento-card-feature {
+    grid-column: span 2;
   }
-  .proof-strip {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.8rem;
+  .bento-card-cta {
+    grid-column: span 2;
   }
-  .hero-cta-group {
-    flex-direction: column;
-    width: 100%;
+}
+
+@media (max-width: 640px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
   }
-  .btn {
-    width: 100%;
-    justify-content: center;
+  .bento-card-main,
+  .bento-card-feature,
+  .bento-card-cta {
+    grid-column: span 1;
+  }
+  .main-title {
+    font-size: 2.2rem;
+  }
+  .card-inner {
+    padding: 20px 18px;
   }
 }
 </style>

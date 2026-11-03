@@ -34,18 +34,18 @@ defineProps({
 }
 
 .edu-card {
-  background: rgba(13, 23, 18, 0.7);
-  backdrop-filter: blur(14px);
+  background: #0d0d10;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 24px;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 
 .edu-card:hover {
   transform: translateY(-3px);
-  border-color: #38BDF8;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: #121215;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
 .edu-top-row {
@@ -57,9 +57,8 @@ defineProps({
 
 .edu-badge {
   font-size: 0.72rem;
-  background: rgba(56, 189, 248, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  color: #38BDF8;
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
   padding: 2px 8px;
   border-radius: 4px;
   font-weight: 700;
@@ -68,7 +67,7 @@ defineProps({
 
 .edu-year {
   font-size: 0.85rem;
-  color: #94A3B8;
+  color: var(--text-muted);
   font-weight: 600;
 }
 
@@ -81,12 +80,12 @@ defineProps({
 
 .edu-inst {
   font-size: 0.95rem;
-  color: #CBD5E1;
+  color: var(--text-secondary);
   margin-bottom: 0.3rem;
 }
 
 .edu-loc {
   font-size: 0.82rem;
-  color: #64748B;
+  color: var(--text-muted);
 }
 </style>

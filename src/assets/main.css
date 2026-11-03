@@ -1,19 +1,25 @@
-/* Global CSS - Vasudev Yadav Google Stitch Collaborative Portfolio */
+/* Global CSS - Vasudev Yadav Portfolio (Black & Grey Minimalist Edition) */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg-color: #080E0A;
-  --surface-dark: #0D1712;
-  --surface-card: #122019;
-  --surface-hover: #182C22;
+  --bg-color: #000000;
+  --surface-base: #09090b;
+  --surface-card: #111113;
+  --surface-hover: #18181b;
+  --surface-active: #27272a;
+  
   --text-primary: #FFFFFF;
-  --text-secondary: #94A3B8;
-  --color-mint: #22C55E;
-  --color-lime: #A3E635;
-  --color-sky: #38BDF8;
-  --color-violet: #8B5CF6;
-  --color-amber: #F59E0B;
-  --border-color: rgba(255, 255, 255, 0.08);
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
+  
+  --accent-white: #FFFFFF;
+  --accent-silver: #E4E4E7;
+  --accent-zinc: #D4D4D8;
+  
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.2);
+  --border-focus: rgba(255, 255, 255, 0.4);
+
   --font-main: 'Plus Jakarta Sans', sans-serif;
   --font-heading: 'Outfit', sans-serif;
   --container-width: 1240px;
@@ -27,6 +33,7 @@
 
 html {
   scroll-behavior: smooth;
+  background-color: var(--bg-color);
 }
 
 body {
@@ -39,22 +46,21 @@ body {
   position: relative;
 }
 
-/* Subtle Stitch Canvas Dot Grid */
+/* Subtle Canvas Grid Overlay */
 .stitch-bg-grid {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-size: 32px 32px;
+  background-size: 36px 36px;
   background-image: 
-    radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
   pointer-events: none;
   z-index: 0;
-  opacity: 0.6;
 }
 
-/* Glowing Ambient Backdrops */
+/* Subtle Monochrome Vignette */
 body::before {
   content: '';
   position: fixed;
@@ -63,28 +69,28 @@ body::before {
   width: 100%;
   height: 100%;
   background: 
-    radial-gradient(circle at 10% 20%, rgba(34, 197, 94, 0.08) 0%, transparent 35%),
-    radial-gradient(circle at 90% 60%, rgba(139, 92, 246, 0.07) 0%, transparent 35%);
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+    radial-gradient(circle at 50% 100%, rgba(24, 24, 27, 0.5) 0%, transparent 60%);
   z-index: -1;
   pointer-events: none;
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #080E0A;
+  background: #000000;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1F352A;
+  background: #27272a;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #22C55E;
+  background: #3f3f46;
 }
 
 a {
@@ -109,4 +115,5 @@ ul {
 h1, h2, h3, h4 {
   font-family: var(--font-heading);
   letter-spacing: -0.5px;
+  color: var(--text-primary);
 }

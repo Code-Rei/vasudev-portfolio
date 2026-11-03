@@ -5,9 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { portfolioData } from './data.js';
 
 // Components
-import CollaborativeCursors from './components/CollaborativeCursors.vue';
 import HeroSection from './components/HeroSection.vue';
-import ImpactStatsSection from './components/ImpactStatsSection.vue';
 import ProjectsSection from './components/ProjectsSection.vue';
 import ExperienceSection from './components/ExperienceSection.vue';
 import SkillsSection from './components/SkillsSection.vue';
@@ -34,26 +32,24 @@ const scrollToSection = (id) => {
 };
 
 onMounted(() => {
-  // Section entrance animations with Stitch selection appearance
-  const sections = document.querySelectorAll('.stitch-section');
+  // Minimalist reveal animation on scroll for sections
+  const sections = document.querySelectorAll('.page-section');
   
   sections.forEach((section) => {
     gsap.fromTo(
       section,
       {
         opacity: 0,
-        y: 40,
-        scale: 0.98
+        y: 35
       },
       {
         opacity: 1,
         y: 0,
-        scale: 1,
-        duration: 0.9,
+        duration: 0.8,
         ease: 'power3.out',
         scrollTrigger: {
           trigger: section,
-          start: 'top 82%',
+          start: 'top 85%',
           toggleActions: 'play none none reverse'
         }
       }
@@ -63,45 +59,40 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="stitch-app-wrapper">
-    <!-- Background Canvas Grid with Stitch Rulers -->
+  <div class="portfolio-app-root">
+    <!-- Subtle Background Dot Grid -->
     <div class="stitch-bg-grid" aria-hidden="true"></div>
 
-    <!-- Collaborative Cursors Engine -->
-    <CollaborativeCursors :cursors="portfolioData.collaboratorCursors" />
-
-    <!-- Top Fixed Navigation Header -->
+    <!-- Minimalist Sticky Header -->
     <header class="header">
       <div class="container header-inner">
-        <!-- Logo with Live Status -->
+        <!-- Logo -->
         <a href="#about" class="nav-brand">
           <span class="brand-avatar">VY</span>
-          <div class="brand-text">
-            <span class="brand-name">Vasudev Yadav</span>
+          <div class="brand-meta">
+            <span class="brand-name">{{ portfolioData.personalDetails.name }}</span>
             <span class="brand-role">Product Owner & Tech BA</span>
           </div>
-          <span class="online-indicator" title="Collaborative Workspace Active"></span>
         </a>
 
         <!-- Desktop Navigation -->
         <nav class="desktop-nav">
           <ul class="nav-links">
-            <li><a href="#about" class="nav-link">About</a></li>
-            <li><a href="#impact" class="nav-link">Impact</a></li>
-            <li><a href="#projects" class="nav-link">Projects</a></li>
+            <li><a href="#about" class="nav-link">Overview</a></li>
+            <li><a href="#projects" class="nav-link">Platforms</a></li>
             <li><a href="#experience" class="nav-link">Experience</a></li>
-            <li><a href="#skills" class="nav-link">Skills</a></li>
+            <li><a href="#skills" class="nav-link">Competencies</a></li>
             <li><a href="#contact" class="nav-link">Contact</a></li>
           </ul>
         </nav>
 
-        <!-- Right Quick Action -->
+        <!-- Right CTA Button -->
         <div class="header-action-group">
           <button @click="scrollToSection('contact')" class="nav-cta-btn">
             Connect ➔
           </button>
 
-          <!-- Mobile Menu Toggle Button -->
+          <!-- Mobile Hamburger -->
           <button class="mobile-menu-btn" @click="toggleMenu" aria-label="Toggle Menu">
             <span :class="{ 'open': isMenuOpen }"></span>
             <span :class="{ 'open': isMenuOpen }"></span>
@@ -109,100 +100,86 @@ onMounted(() => {
           </button>
         </div>
 
-        <!-- Mobile Drawer Navigation -->
+        <!-- Mobile Drawer -->
         <div class="mobile-nav" :class="{ 'open': isMenuOpen }">
           <div class="mobile-nav-header">
-            <span>Navigation Workspace</span>
+            <span>Navigation</span>
             <button @click="toggleMenu" class="close-drawer">✕</button>
           </div>
           <ul class="mobile-nav-links">
-            <li><a href="#about" class="nav-link" @click="toggleMenu">About</a></li>
-            <li><a href="#impact" class="nav-link" @click="toggleMenu">Impact</a></li>
-            <li><a href="#projects" class="nav-link" @click="toggleMenu">Projects</a></li>
+            <li><a href="#about" class="nav-link" @click="toggleMenu">Overview</a></li>
+            <li><a href="#projects" class="nav-link" @click="toggleMenu">Platforms</a></li>
             <li><a href="#experience" class="nav-link" @click="toggleMenu">Experience</a></li>
-            <li><a href="#skills" class="nav-link" @click="toggleMenu">Skills</a></li>
+            <li><a href="#skills" class="nav-link" @click="toggleMenu">Competencies</a></li>
             <li><a href="#contact" class="nav-link" @click="toggleMenu">Contact</a></li>
           </ul>
         </div>
       </div>
     </header>
 
-    <!-- Main Content Stream -->
+    <!-- Main Content -->
     <main>
-      <!-- Hero Section -->
+      <!-- Hero Section (Bento Box Component Assembly) -->
       <HeroSection :data="portfolioData" @contact="scrollToSection('contact')" />
 
-      <!-- Impact Metrics Section -->
-      <section id="impact" class="stitch-section container">
-        <div class="section-tag-header">
-          <span class="tag-number">01</span>
-          <span class="tag-title">Scale & Real-World Operations</span>
-        </div>
-        <h2 class="section-heading">Operational Scale & Measured Impact</h2>
-        <p class="section-subheading">
-          Real numbers from the front lines of microfinance banking and software delivery.
-        </p>
-        <ImpactStatsSection :metrics="portfolioData.impactMetrics" />
-      </section>
-
       <!-- Projects Section -->
-      <section id="projects" class="stitch-section container">
-        <div class="section-tag-header">
-          <span class="tag-number">02</span>
-          <span class="tag-title">Systems & Architecture</span>
+      <section id="projects" class="page-section container">
+        <div class="section-badge">
+          <span class="badge-num">01</span>
+          <span class="badge-label">SYSTEMS & ARCHITECTURE</span>
         </div>
-        <h2 class="section-heading">Featured Platforms & AI Prototypes</h2>
-        <p class="section-subheading">
-          Enterprise FinTech SaaS platforms guided with developers, alongside autonomous AI tools & microservices prototyped rapidly using AI.
+        <h2 class="section-title">Enterprise SaaS Platforms & AI Prototypes</h2>
+        <p class="section-lead">
+          Core financial platforms delivered with engineering teams, alongside autonomous AI microservices prototyped using AI.
         </p>
         <ProjectsSection :projects="portfolioData.projects" />
       </section>
 
       <!-- Experience Section -->
-      <section id="experience" class="stitch-section container">
-        <div class="section-tag-header">
-          <span class="tag-number">03</span>
-          <span class="tag-title">Professional Trajectory</span>
+      <section id="experience" class="page-section container">
+        <div class="section-badge">
+          <span class="badge-num">02</span>
+          <span class="badge-label">OPERATIONS & LEADERSHIP</span>
         </div>
-        <h2 class="section-heading">Career Experience & Leadership</h2>
-        <p class="section-subheading">
-          From ground-level branch operations managing 76 staff to guiding cross-platform engineering sprints.
+        <h2 class="section-title">Career Experience</h2>
+        <p class="section-lead">
+          From ground-level branch operations directing 76 staff across 36 branches to guiding cross-platform engineering sprints.
         </p>
         <ExperienceSection :experience="portfolioData.experience" />
       </section>
 
       <!-- Skills Section -->
-      <section id="skills" class="stitch-section container">
-        <div class="section-tag-header">
-          <span class="tag-number">04</span>
-          <span class="tag-title">4-Pillar Competencies</span>
+      <section id="skills" class="page-section container">
+        <div class="section-badge">
+          <span class="badge-num">03</span>
+          <span class="badge-label">SKILL MATRIX</span>
         </div>
-        <h2 class="section-heading">Techno-Functional Skill Matrix</h2>
-        <p class="section-subheading">
-          Bridging UX wireframing, banking domain knowledge, practical SQL, and modern AI acceleration.
+        <h2 class="section-title">Core Competencies</h2>
+        <p class="section-lead">
+          Bridging UX wireframing, lending operations, practical SQL, and modern AI acceleration.
         </p>
         <SkillsSection :categories="portfolioData.skillCategories" />
       </section>
 
       <!-- Education Section -->
-      <section id="education" class="stitch-section container">
-        <div class="section-tag-header">
-          <span class="tag-number">05</span>
-          <span class="tag-title">Academic Foundation</span>
+      <section id="education" class="page-section container">
+        <div class="section-badge">
+          <span class="badge-num">04</span>
+          <span class="badge-label">CREDENTIALS</span>
         </div>
-        <h2 class="section-heading">Education & Credentials</h2>
+        <h2 class="section-title">Education & Certifications</h2>
         <EducationSection :education="portfolioData.education" />
       </section>
     </main>
 
-    <!-- Footer / Contact Section -->
-    <footer id="contact" class="stitch-section footer">
+    <!-- Footer / Contact -->
+    <footer id="contact" class="page-section footer">
       <div class="container">
-        <div class="section-tag-header center">
-          <span class="tag-number">06</span>
-          <span class="tag-title">Initiate Collaboration</span>
+        <div class="section-badge center">
+          <span class="badge-num">05</span>
+          <span class="badge-label">INITIATE COLLABORATION</span>
         </div>
-        <h2 class="section-heading center">Get In Touch</h2>
+        <h2 class="section-title center">Get In Touch</h2>
         <ContactSection :details="portfolioData.personalDetails" />
       </div>
     </footer>
@@ -210,12 +187,11 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.stitch-app-wrapper {
-  position: relative;
+.portfolio-app-root {
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-primary);
-  overflow-x: hidden;
+  position: relative;
 }
 
 /* Header */
@@ -224,10 +200,10 @@ onMounted(() => {
   top: 0;
   left: 0;
   width: 100%;
-  padding: 12px 0;
-  background: rgba(8, 14, 10, 0.85);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-subtle);
   z-index: 100;
 }
 
@@ -241,29 +217,28 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
-  text-decoration: none;
 }
 
 .brand-avatar {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #A3E635, #22C55E);
-  color: #080E0A;
-  font-weight: 800;
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  font-weight: 700;
   font-size: 0.85rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.brand-text {
+.brand-meta {
   display: flex;
   flex-direction: column;
 }
 
 .brand-name {
-  font-family: var(--font-main);
   font-weight: 700;
   font-size: 0.95rem;
   color: #FFFFFF;
@@ -271,16 +246,7 @@ onMounted(() => {
 
 .brand-role {
   font-size: 0.72rem;
-  color: var(--color-mint);
-  font-weight: 500;
-}
-
-.online-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22C55E;
-  box-shadow: 0 0 8px #22C55E;
+  color: var(--text-muted);
 }
 
 .desktop-nav {
@@ -290,20 +256,18 @@ onMounted(() => {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 24px;
-  list-style: none;
+  gap: 28px;
 }
 
 .nav-link {
   font-size: 0.88rem;
-  color: #94A3B8;
-  text-decoration: none;
+  color: var(--text-secondary);
   font-weight: 500;
   transition: color 0.2s ease;
 }
 
 .nav-link:hover {
-  color: #22C55E;
+  color: #FFFFFF;
 }
 
 .header-action-group {
@@ -313,75 +277,74 @@ onMounted(() => {
 }
 
 .nav-cta-btn {
-  background: rgba(34, 197, 94, 0.15);
-  border: 1px solid rgba(34, 197, 94, 0.4);
-  color: #22C55E;
+  background: #FFFFFF;
+  color: #000000;
+  font-weight: 600;
   font-size: 0.82rem;
-  font-weight: 700;
-  padding: 6px 14px;
+  padding: 7px 16px;
   border-radius: 6px;
+  border: none;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .nav-cta-btn:hover {
-  background: #22C55E;
-  color: #080E0A;
+  background: #E4E4E7;
+  transform: translateY(-1px);
 }
 
 /* Sections */
-.stitch-section {
-  padding: 5rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+.page-section {
+  padding: 6rem 0;
+  border-bottom: 1px solid var(--border-subtle);
   position: relative;
 }
 
-.section-tag-header {
+.section-badge {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
 }
 
-.section-tag-header.center {
+.section-badge.center {
   justify-content: center;
 }
 
-.tag-number {
+.badge-num {
   font-family: monospace;
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: var(--color-mint);
-  background: rgba(34, 197, 94, 0.1);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.06);
   padding: 2px 6px;
   border-radius: 4px;
 }
 
-.tag-title {
-  font-size: 0.82rem;
-  text-transform: uppercase;
+.badge-label {
+  font-size: 0.78rem;
   letter-spacing: 1px;
-  color: #64748B;
-  font-weight: 600;
+  color: var(--text-muted);
+  font-weight: 700;
 }
 
-.section-heading {
-  font-size: 2.6rem;
+.section-title {
+  font-size: 2.4rem;
   font-weight: 800;
   color: #FFFFFF;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
   letter-spacing: -0.5px;
 }
 
-.section-heading.center {
+.section-title.center {
   text-align: center;
 }
 
-.section-subheading {
-  font-size: 1.1rem;
-  color: #94A3B8;
-  max-width: 700px;
-  margin-bottom: 2.5rem;
+.section-lead {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 680px;
+  margin-bottom: 2.8rem;
   line-height: 1.6;
 }
 
@@ -390,8 +353,8 @@ onMounted(() => {
   display: none;
   flex-direction: column;
   justify-content: space-between;
-  width: 26px;
-  height: 18px;
+  width: 24px;
+  height: 16px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -410,9 +373,8 @@ onMounted(() => {
   right: -100%;
   width: 280px;
   height: 100vh;
-  background: rgba(8, 14, 10, 0.98);
-  backdrop-filter: blur(25px);
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  background: #09090b;
+  border-left: 1px solid var(--border-subtle);
   padding: 24px;
   transition: right 0.3s ease;
   z-index: 200;
@@ -429,9 +391,9 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   padding-bottom: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border-subtle);
   font-size: 0.85rem;
-  color: #94A3B8;
+  color: var(--text-muted);
 }
 
 .close-drawer {
@@ -451,7 +413,7 @@ onMounted(() => {
 }
 
 .mobile-nav-links .nav-link {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   color: #E2E8F0;
 }
 
@@ -462,8 +424,8 @@ onMounted(() => {
   .mobile-menu-btn {
     display: flex;
   }
-  .section-heading {
-    font-size: 2rem;
+  .section-title {
+    font-size: 1.9rem;
   }
 }
 </style>

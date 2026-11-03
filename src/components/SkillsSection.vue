@@ -13,7 +13,6 @@ defineProps({
       v-for="cat in categories"
       :key="cat.category"
       class="skill-category-card"
-      :style="{ '--c-accent': cat.color }"
     >
       <div class="cat-header">
         <span class="cat-accent-dot"></span>
@@ -38,24 +37,24 @@ defineProps({
 .skills-categories-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.8rem;
+  gap: 1.5rem;
   margin-top: 1rem;
 }
 
 .skill-category-card {
-  background: rgba(13, 23, 18, 0.7);
-  backdrop-filter: blur(14px);
+  background: #0d0d10;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   padding: 24px;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   position: relative;
 }
 
 .skill-category-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--c-accent);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(34, 197, 94, 0.08);
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: #121215;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
 .cat-header {
@@ -68,11 +67,11 @@ defineProps({
 }
 
 .cat-accent-dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: var(--c-accent);
-  box-shadow: 0 0 10px var(--c-accent);
+  background: #FFFFFF;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
 }
 
 .cat-title {
@@ -85,8 +84,8 @@ defineProps({
 
 .cat-count {
   font-size: 0.72rem;
-  color: #64748B;
-  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
   padding: 2px 6px;
   border-radius: 4px;
 }
@@ -99,17 +98,17 @@ defineProps({
 
 .skill-pill {
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  color: #CBD5E1;
-  font-size: 0.85rem;
-  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  padding: 5px 11px;
   border-radius: 6px;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
 }
 
 .skill-pill:hover {
   background: rgba(255, 255, 255, 0.1);
-  border-color: var(--c-accent);
+  border-color: rgba(255, 255, 255, 0.25);
   color: #FFFFFF;
   transform: translateY(-1px);
 }
