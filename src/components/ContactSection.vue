@@ -1,4 +1,12 @@
 <script setup>
+import {
+  Mail,
+  Phone,
+  Linkedin,
+  Github,
+  ArrowUpRight
+} from 'lucide-vue-next';
+
 defineProps({
   details: {
     type: Object,
@@ -15,50 +23,58 @@ defineProps({
       </p>
     </div>
 
-    <!-- Contact Grid -->
+    <!-- Contact Grid with Official Lucide Icons -->
     <div class="contact-grid">
       <!-- Email Card -->
       <a :href="'mailto:' + details.email" class="contact-card">
-        <div class="contact-icon">✉️</div>
+        <div class="contact-icon-box">
+          <Mail :size="20" class="c-icon" />
+        </div>
         <div class="contact-info">
           <span class="c-label">Direct Email</span>
           <span class="c-value">{{ details.email }}</span>
         </div>
-        <span class="c-arrow">➔</span>
+        <ArrowUpRight :size="18" class="c-arrow" />
       </a>
 
       <!-- Phone Card -->
       <a :href="'tel:' + details.phone" class="contact-card">
-        <div class="contact-icon">📞</div>
+        <div class="contact-icon-box">
+          <Phone :size="20" class="c-icon" />
+        </div>
         <div class="contact-info">
           <span class="c-label">Phone / WhatsApp</span>
           <span class="c-value">{{ details.phone }}</span>
         </div>
-        <span class="c-arrow">➔</span>
+        <ArrowUpRight :size="18" class="c-arrow" />
       </a>
 
       <!-- LinkedIn Card -->
       <a :href="details.linkedinUrl" target="_blank" rel="noopener" class="contact-card">
-        <div class="contact-icon">🔗</div>
+        <div class="contact-icon-box">
+          <Linkedin :size="20" class="c-icon" />
+        </div>
         <div class="contact-info">
           <span class="c-label">LinkedIn</span>
           <span class="c-value">{{ details.linkedin }}</span>
         </div>
-        <span class="c-arrow">↗</span>
+        <ArrowUpRight :size="18" class="c-arrow" />
       </a>
 
       <!-- GitHub Card -->
       <a :href="details.githubUrl" target="_blank" rel="noopener" class="contact-card">
-        <div class="contact-icon">💻</div>
+        <div class="contact-icon-box">
+          <Github :size="20" class="c-icon" />
+        </div>
         <div class="contact-info">
           <span class="c-label">GitHub</span>
           <span class="c-value">{{ details.github }}</span>
         </div>
-        <span class="c-arrow">↗</span>
+        <ArrowUpRight :size="18" class="c-arrow" />
       </a>
     </div>
 
-    <!-- Clean Minimalist Footer Signature -->
+    <!-- Minimalist Footer Signature -->
     <div class="minimal-footer">
       <span class="footer-meta">
         © 2026 Vasudev Yadav • Designed with Minimalist Black & Grey Aesthetics
@@ -112,12 +128,31 @@ defineProps({
 .contact-card:hover {
   transform: translateY(-3px);
   border-color: rgba(255, 255, 255, 0.25);
-  background: #121215;
+  background: #141418;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
 }
 
-.contact-icon {
-  font-size: 1.4rem;
+.contact-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.contact-card:hover .contact-icon-box {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.c-icon {
+  color: #FFFFFF;
 }
 
 .contact-info {
@@ -142,12 +177,11 @@ defineProps({
 
 .c-arrow {
   color: var(--text-muted);
-  font-size: 1rem;
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .contact-card:hover .c-arrow {
-  transform: translateX(3px);
+  transform: translate(2px, -2px);
   color: #FFFFFF;
 }
 

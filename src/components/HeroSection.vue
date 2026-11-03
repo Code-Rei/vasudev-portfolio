@@ -1,6 +1,17 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import gsap from 'gsap';
+import {
+  MapPin,
+  Building2,
+  Zap,
+  Layers,
+  Cpu,
+  ArrowRight,
+  ArrowUpRight,
+  Sparkles,
+  ShieldCheck
+} from 'lucide-vue-next';
 
 const props = defineProps({
   data: {
@@ -12,21 +23,32 @@ const props = defineProps({
 defineEmits(['contact']);
 
 const containerRef = ref(null);
-const isAssembled = ref(false);
 const hasInteracted = ref(false);
 
-const handleMouseMove = (e) => {
-  if (!containerRef.value) return;
-
-  // Calculate mouse coordinates relative to container
-  const rect = containerRef.value.getBoundingClientRect();
+// Localized hover spotlight: Only the particular card hovered gets the flashlight coordinates
+const onCardMouseMove = (e) => {
+  const card = e.currentTarget;
+  const rect = card.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
 
-  containerRef.value.style.setProperty('--mouse-x', `${x}px`);
-  containerRef.value.style.setProperty('--mouse-y', `${y}px`);
+  card.style.setProperty('--card-x', `${x}px`);
+  card.style.setProperty('--card-y', `${y}px`);
 
-  // Trigger assembly chain reaction on first cursor wake-up
+  if (!hasInteracted.value) {
+    hasInteracted.value = true;
+    assembleComponents();
+  }
+};
+
+const onCardMouseLeave = (e) => {
+  const card = e.currentTarget;
+  card.style.setProperty('--card-x', `-500px`);
+  card.style.setProperty('--card-y', `-500px`);
+};
+
+// General container movement fallback
+const onContainerMouseMove = () => {
   if (!hasInteracted.value) {
     hasInteracted.value = true;
     assembleComponents();
@@ -34,34 +56,31 @@ const handleMouseMove = (e) => {
 };
 
 const assembleComponents = () => {
-  isAssembled.value = true;
-  
-  // Staggered chain reaction assembly (0.15s stagger)
   gsap.to('.bento-item', {
     opacity: 1,
     scale: 1,
     y: 0,
     duration: 0.65,
-    stagger: 0.15,
+    stagger: 0.12,
     ease: 'back.out(1.3)',
     overwrite: 'auto'
   });
 };
 
 onMounted(() => {
-  // Set initial wireframe / hidden state
+  // Set initial dormant wireframe state
   gsap.set('.bento-item', {
     opacity: 0,
     scale: 0.9,
-    y: 12
+    y: 14
   });
 
-  // Fallback timer: if user doesn't move mouse within 1.5s, assemble automatically so mobile / touch users see the UI
+  // Touch screen fallback
   setTimeout(() => {
     if (!hasInteracted.value) {
       assembleComponents();
     }
-  }, 1500);
+  }, 1200);
 });
 </script>
 
@@ -70,53 +89,76 @@ onMounted(() => {
     id="about"
     ref="containerRef"
     class="bento-hero-section container"
-    @mousemove="handleMouseMove"
+    @mousemove="onContainerMouseMove"
   >
-    <!-- Interactive Flashlight / Radial Spotlight Layer -->
-    <div class="flashlight-overlay" aria-hidden="true"></div>
-
-    <!-- Wireframe Wake-up Hint (fades out after first interaction) -->
-    <div class="wake-up-indicator" :class="{ 'faded': hasInteracted }">
+    <!-- Wireframe Wake-up Hint (fades out on interaction) -->
+    <div class="wake-up-hint" :class="{ 'is-dormant': hasInteracted }">
       <span class="pulse-beacon"></span>
-      <span class="hint-text">Move cursor to wake up and assemble the workspace</span>
+      <span class="hint-text">Hover or move cursor across the workspace</span>
     </div>
 
-    <!-- Bento Box Grid (5-6 Portfolio Components) -->
+    <!-- Bento Box CSS Grid -->
     <div class="bento-grid">
-      <!-- Component 1: Primary Identity & About (Spans 2 columns) -->
-      <div class="bento-item bento-card bento-card-main">
-        <div class="card-glow-border"></div>
-        <div class="card-inner">
-          <div class="status-pill-row">
-            <span class="mono-badge">PO & TECH BA</span>
-            <span class="location-badge">Kota, RJ</span>
-            <span class="live-status">
-              <span class="live-dot"></span> Available for Product Roles
-            </span>
+      <!-- Component 1: Primary Identity & User Portrait (Spans 2 columns) -->
+      <div
+        class="bento-item bento-card bento-card-main"
+        @mousemove="onCardMouseMove"
+        @mouseleave="onCardMouseLeave"
+      >
+        <div class="card-inner main-card-layout">
+          <!-- Left Text Details -->
+          <div class="main-text-col">
+            <div class="status-pill-row">
+              <span class="mono-badge">PRODUCT OWNER & TECH BA</span>
+              <span class="location-badge">
+                <MapPin :size="13" class="icon-inline" /> Kota, RJ
+              </span>
+              <span class="live-status">
+                <span class="live-dot"></span> Available for Roles
+              </span>
+            </div>
+
+            <h1 class="main-title">{{ data.personalDetails.name }}</h1>
+            <h2 class="sub-role">{{ data.personalDetails.title }}</h2>
+
+            <p class="about-summary">
+              Pairs front-line operational leadership (previously directed <strong>76 staff across 36 branches</strong> in microfinance lending) with hands-on product design in Figma, practical SQL, and developer sprint orchestration. Rapidly prototypes working microservices with AI.
+            </p>
+
+            <div class="pill-tag-group">
+              <span class="zinc-pill">Figma Wireframing</span>
+              <span class="zinc-pill">BRD / PRD</span>
+              <span class="zinc-pill">Practical SQL</span>
+              <span class="zinc-pill">AI-Native MVPs</span>
+            </div>
           </div>
 
-          <h1 class="main-title">{{ data.personalDetails.name }}</h1>
-          <h2 class="sub-role">{{ data.personalDetails.title }}</h2>
-
-          <p class="about-summary">
-            Pairs front-line operational leadership (led <strong>76 staff across 36 branches</strong>) with hands-on product design in Figma, practical SQL, and developer sprint orchestration. Rapidly prototypes working microservices with AI.
-          </p>
-
-          <div class="pill-tag-group">
-            <span class="zinc-pill">Figma Wireframing</span>
-            <span class="zinc-pill">BRD / PRD</span>
-            <span class="zinc-pill">Practical SQL</span>
-            <span class="zinc-pill">AI-Native MVPs</span>
+          <!-- Right User Portrait Image (Directly filling user requested red box) -->
+          <div class="main-photo-col">
+            <div class="profile-photo-frame">
+              <img
+                src="/profile.jpg"
+                alt="Vasudev Yadav"
+                class="profile-img"
+              />
+              <div class="profile-badge-overlay">
+                <ShieldCheck :size="13" class="verified-icon" />
+                <span>Vasudev Yadav</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Component 2: Field Scale Metric (Card 2) -->
-      <div class="bento-item bento-card bento-card-stat">
-        <div class="card-glow-border"></div>
+      <div
+        class="bento-item bento-card bento-card-stat"
+        @mousemove="onCardMouseMove"
+        @mouseleave="onCardMouseLeave"
+      >
         <div class="card-inner">
           <div class="stat-top">
-            <span class="stat-icon">🏢</span>
+            <Building2 :size="18" class="stat-icon" />
             <span class="stat-tag">GROUND OPERATIONS</span>
           </div>
           <div class="stat-number">76 Staff</div>
@@ -127,13 +169,16 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Component 3: Product Speed Metric (Card 3) -->
-      <div class="bento-item bento-card bento-card-stat">
-        <div class="card-glow-border"></div>
+      <!-- Component 3: Product Velocity Metric (Card 3) -->
+      <div
+        class="bento-item bento-card bento-card-stat"
+        @mousemove="onCardMouseMove"
+        @mouseleave="onCardMouseLeave"
+      >
         <div class="card-inner">
           <div class="stat-top">
-            <span class="stat-icon">⚡</span>
-            <span class="stat-tag">PRODUCT SPEED</span>
+            <Zap :size="18" class="stat-icon" />
+            <span class="stat-tag">PRODUCT VELOCITY</span>
           </div>
           <div class="stat-number">>40%</div>
           <div class="stat-label">Turnaround Reduction</div>
@@ -143,37 +188,55 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Component 4: Flagship Project Card (Card 4 - Spans 2 columns) -->
-      <div class="bento-item bento-card bento-card-feature">
-        <div class="card-glow-border"></div>
+      <!-- Component 4: Flagship Platform Card (Spans 2 columns) -->
+      <div
+        class="bento-item bento-card bento-card-feature"
+        @mousemove="onCardMouseMove"
+        @mouseleave="onCardMouseLeave"
+      >
         <div class="card-inner">
           <div class="project-header">
-            <span class="feature-tag">FLAGSHIP PLATFORM</span>
+            <div class="feature-tag-wrap">
+              <Layers :size="15" class="icon-inline" />
+              <span class="feature-tag">FLAGSHIP PLATFORM</span>
+            </div>
             <span class="tech-tag-row">.NET Core • Angular • React Native</span>
           </div>
+
           <h3 class="feature-title">Fieldmate+</h3>
           <p class="feature-desc">
-            White-label collection & field ops SaaS for NBFCs and MFIs. Features Android LO app with geo-tagged selfie attendance, real-time UPI QR collections, and floating cash-lock rules.
+            White-label collection & field ops SaaS for NBFCs and MFIs. Features Android LO app with geo-tagged selfie attendance, real-time UPI QR collections, and floating cash-lock safeguards.
           </p>
+
           <div class="feature-meta">
             <span>Guided 4 Developers + 1 QA</span>
-            <a href="#projects" class="feature-link">View Specs ➔</a>
+            <a href="#projects" class="feature-link">
+              View Architectural Specs <ArrowRight :size="14" class="icon-inline" />
+            </a>
           </div>
         </div>
       </div>
 
-      <!-- Component 5: AI Prototyping Showcase (Card 5) -->
-      <div class="bento-item bento-card bento-card-ai">
-        <div class="card-glow-border"></div>
+      <!-- Component 5: AI Microservice (Card 5) -->
+      <div
+        class="bento-item bento-card bento-card-ai"
+        @mousemove="onCardMouseMove"
+        @mouseleave="onCardMouseLeave"
+      >
         <div class="card-inner">
           <div class="ai-header">
-            <span class="feature-tag">AI-NATIVE PROTOTYPE</span>
+            <div class="ai-tag-wrap">
+              <Cpu :size="15" class="icon-inline" />
+              <span class="feature-tag">AI-NATIVE PROTOTYPE</span>
+            </div>
             <span class="go-badge">Go 1.22</span>
           </div>
+
           <h3 class="ai-title">GST Vision AI Solver</h3>
           <p class="ai-desc">
             Solves tax portal CAPTCHAs via Gemma Multimodal Vision AI with cookiejar session persistence.
           </p>
+
           <div class="ai-footer">
             <span class="docker-badge">Docker Sub-25MB</span>
           </div>
@@ -181,8 +244,11 @@ onMounted(() => {
       </div>
 
       <!-- Component 6: Contact & Interaction Hub (Card 6) -->
-      <div class="bento-item bento-card bento-card-cta">
-        <div class="card-glow-border"></div>
+      <div
+        class="bento-item bento-card bento-card-cta"
+        @mousemove="onCardMouseMove"
+        @mouseleave="onCardMouseLeave"
+      >
         <div class="card-inner cta-inner">
           <div class="cta-text">
             <span class="cta-pre">READY TO COLLABORATE?</span>
@@ -190,7 +256,7 @@ onMounted(() => {
           </div>
           <div class="cta-action-row">
             <button @click="$emit('contact')" class="btn-dark-primary">
-              Get In Touch ➔
+              Get In Touch <ArrowRight :size="15" class="icon-inline" />
             </button>
             <a
               :href="data.personalDetails.linkedinUrl"
@@ -198,7 +264,7 @@ onMounted(() => {
               rel="noopener"
               class="btn-dark-secondary"
             >
-              LinkedIn ↗
+              LinkedIn <ArrowUpRight :size="15" class="icon-inline" />
             </a>
           </div>
         </div>
@@ -213,58 +279,37 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-top: 6rem;
+  padding-top: 5.5rem;
   padding-bottom: 4rem;
   position: relative;
-  --mouse-x: -500px;
-  --mouse-y: -500px;
 }
 
-/* Flashlight / Radial Border Glow Spotlight */
-.flashlight-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  background: radial-gradient(
-    600px circle at var(--mouse-x) var(--mouse-y),
-    rgba(255, 255, 255, 0.06),
-    transparent 45%
-  );
-  z-index: 1;
-}
-
-/* Wake-up Hint */
-.wake-up-indicator {
+.wake-up-hint {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 1.5rem;
-  font-size: 0.82rem;
+  margin-bottom: 1.2rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
-  font-family: var(--font-main);
-  transition: opacity 0.5s ease;
+  font-family: monospace;
+  transition: opacity 0.4s ease;
 }
 
-.wake-up-indicator.faded {
-  opacity: 0.35;
+.wake-up-hint.is-dormant {
+  opacity: 0.25;
 }
 
 .pulse-beacon {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-  animation: beacon-pulse 2s infinite;
+  background: #FFFFFF;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
 }
 
-@keyframes beacon-pulse {
-  0% { transform: scale(0.9); opacity: 0.4; }
-  50% { transform: scale(1.4); opacity: 1; }
-  100% { transform: scale(0.9); opacity: 0.4; }
+.icon-inline {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* Bento CSS Grid */
@@ -276,7 +321,7 @@ onMounted(() => {
   z-index: 2;
 }
 
-/* Bento Card Base (Initial Wireframe State) */
+/* Bento Card Base */
 .bento-card {
   background: #09090b;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -285,9 +330,11 @@ onMounted(() => {
   overflow: hidden;
   transition: border-color 0.25s ease, transform 0.25s ease;
   will-change: transform, opacity;
+  --card-x: -500px;
+  --card-y: -500px;
 }
 
-/* Dynamic Spotlight Border Highlight */
+/* Individual Card Hover Spotlight (ONLY fires on the particular card hovered!) */
 .bento-card::before {
   content: '';
   position: absolute;
@@ -297,22 +344,22 @@ onMounted(() => {
   height: 100%;
   border-radius: inherit;
   background: radial-gradient(
-    400px circle at var(--mouse-x) var(--mouse-y),
-    rgba(255, 255, 255, 0.15),
-    transparent 50%
+    380px circle at var(--card-x) var(--card-y),
+    rgba(255, 255, 255, 0.16),
+    transparent 60%
   );
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
   z-index: 2;
 }
 
-.bento-hero-section:hover .bento-card::before {
+.bento-card:hover::before {
   opacity: 1;
 }
 
 .bento-card:hover {
-  border-color: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.28);
   transform: translateY(-2px);
 }
 
@@ -325,17 +372,83 @@ onMounted(() => {
   flex-direction: column;
 }
 
-/* Component 1: Main About Card */
+/* Component 1: Main About Card with User Photo Layout */
 .bento-card-main {
   grid-column: span 2;
-  background: linear-gradient(145deg, #0d0d10 0%, #09090b 100%);
+  background: linear-gradient(145deg, #0e0e12 0%, #09090b 100%);
 }
 
+.main-card-layout {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.main-text-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.main-photo-col {
+  flex-shrink: 0;
+}
+
+/* Profile Photo Frame */
+.profile-photo-frame {
+  width: 140px;
+  height: 180px;
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  background: #18181b;
+}
+
+.profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.profile-photo-frame:hover .profile-img {
+  transform: scale(1.05);
+}
+
+.profile-badge-overlay {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  right: 6px;
+  background: rgba(9, 9, 11, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 3px 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 0.65rem;
+  color: #FFFFFF;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.verified-icon {
+  color: #FFFFFF;
+}
+
+/* Status row */
 .status-pill-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1rem;
   flex-wrap: wrap;
 }
 
@@ -353,6 +466,9 @@ onMounted(() => {
 .location-badge {
   font-size: 0.78rem;
   color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .live-status {
@@ -361,7 +477,6 @@ onMounted(() => {
   gap: 6px;
   font-size: 0.78rem;
   color: #A1A1AA;
-  margin-left: auto;
 }
 
 .live-dot {
@@ -373,28 +488,27 @@ onMounted(() => {
 }
 
 .main-title {
-  font-size: 2.8rem;
+  font-size: 2.6rem;
   font-weight: 800;
   letter-spacing: -1px;
   color: #FFFFFF;
   line-height: 1.1;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.2rem;
 }
 
 .sub-role {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--text-secondary);
   font-family: var(--font-main);
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 .about-summary {
-  font-size: 0.98rem;
+  font-size: 0.94rem;
   color: var(--text-secondary);
-  line-height: 1.7;
-  margin-bottom: 1.5rem;
-  max-width: 650px;
+  line-height: 1.65;
+  margin-bottom: 1.2rem;
 }
 
 .about-summary strong {
@@ -404,16 +518,15 @@ onMounted(() => {
 .pill-tag-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: auto;
+  gap: 7px;
 }
 
 .zinc-pill {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #D4D4D8;
-  padding: 4px 10px;
+  padding: 3px 9px;
   border-radius: 6px;
 }
 
@@ -430,7 +543,7 @@ onMounted(() => {
 }
 
 .stat-icon {
-  font-size: 1.1rem;
+  color: #FFFFFF;
 }
 
 .stat-tag {
@@ -450,22 +563,22 @@ onMounted(() => {
 }
 
 .stat-label {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #E4E4E7;
   margin-bottom: 0.6rem;
 }
 
 .stat-desc {
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   color: var(--text-muted);
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
 /* Component 4: Flagship Feature Card (Span 2) */
 .bento-card-feature {
   grid-column: span 2;
-  background: linear-gradient(145deg, #0d0d10 0%, #09090b 100%);
+  background: linear-gradient(145deg, #0e0e12 0%, #09090b 100%);
 }
 
 .project-header {
@@ -473,6 +586,13 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.8rem;
+}
+
+.feature-tag-wrap,
+.ai-tag-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .feature-tag {
@@ -495,7 +615,7 @@ onMounted(() => {
 }
 
 .feature-desc {
-  font-size: 0.95rem;
+  font-size: 0.94rem;
   color: var(--text-secondary);
   line-height: 1.6;
   margin-bottom: 1.2rem;
@@ -516,6 +636,9 @@ onMounted(() => {
 .feature-link {
   color: #FFFFFF;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   transition: transform 0.2s ease;
 }
 
@@ -617,6 +740,9 @@ onMounted(() => {
   border: 1px solid #FFFFFF;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .btn-dark-primary:hover {
@@ -633,6 +759,9 @@ onMounted(() => {
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .btn-dark-secondary:hover {
@@ -645,12 +774,8 @@ onMounted(() => {
   .bento-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .bento-card-main {
-    grid-column: span 2;
-  }
-  .bento-card-feature {
-    grid-column: span 2;
-  }
+  .bento-card-main,
+  .bento-card-feature,
   .bento-card-cta {
     grid-column: span 2;
   }
@@ -665,8 +790,16 @@ onMounted(() => {
   .bento-card-cta {
     grid-column: span 1;
   }
+  .main-card-layout {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
+  .profile-photo-frame {
+    width: 110px;
+    height: 140px;
+  }
   .main-title {
-    font-size: 2.2rem;
+    font-size: 2.1rem;
   }
   .card-inner {
     padding: 20px 18px;

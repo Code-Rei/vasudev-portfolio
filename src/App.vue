@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { portfolioData } from './data.js';
 
 // Components
+import CustomCursor from './components/CustomCursor.vue';
 import HeroSection from './components/HeroSection.vue';
 import ProjectsSection from './components/ProjectsSection.vue';
 import ExperienceSection from './components/ExperienceSection.vue';
@@ -32,7 +33,6 @@ const scrollToSection = (id) => {
 };
 
 onMounted(() => {
-  // Minimalist reveal animation on scroll for sections
   const sections = document.querySelectorAll('.page-section');
   
   sections.forEach((section) => {
@@ -60,15 +60,17 @@ onMounted(() => {
 
 <template>
   <div class="portfolio-app-root">
+    <!-- Interactive Custom Cursor Engine -->
+    <CustomCursor />
+
     <!-- Subtle Background Dot Grid -->
     <div class="stitch-bg-grid" aria-hidden="true"></div>
 
     <!-- Minimalist Sticky Header -->
     <header class="header">
       <div class="container header-inner">
-        <!-- Logo -->
+        <!-- Logo (Clean text brand without the boxy "VY" logo) -->
         <a href="#about" class="nav-brand">
-          <span class="brand-avatar">VY</span>
           <div class="brand-meta">
             <span class="brand-name">{{ portfolioData.personalDetails.name }}</span>
             <span class="brand-role">Product Owner & Tech BA</span>
@@ -200,7 +202,7 @@ onMounted(() => {
   top: 0;
   left: 0;
   width: 100%;
-  padding: 14px 0;
+  padding: 16px 0;
   background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-subtle);
@@ -216,21 +218,7 @@ onMounted(() => {
 .nav-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.brand-avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  background: #18181b;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #FFFFFF;
-  font-weight: 700;
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 10px;
 }
 
 .brand-meta {
@@ -239,9 +227,10 @@ onMounted(() => {
 }
 
 .brand-name {
-  font-weight: 700;
-  font-size: 0.95rem;
+  font-weight: 800;
+  font-size: 1.05rem;
   color: #FFFFFF;
+  letter-spacing: -0.3px;
 }
 
 .brand-role {
