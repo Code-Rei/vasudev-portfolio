@@ -1,4 +1,5 @@
 import React from 'react';
+import { RiMapPinLine } from '@remixicon/react';
 
 export default function EducationSection({ education }) {
   return (
@@ -11,7 +12,12 @@ export default function EducationSection({ education }) {
           </div>
           <h3 className="edu-degree">{edu.degree}</h3>
           <div className="edu-inst">{edu.institution}</div>
-          {edu.location && <div className="edu-loc">📍 {edu.location}</div>}
+          {edu.location && (
+            <div className="edu-loc">
+              <RiMapPinLine size={14} className="inline-icon mr-1" />
+              <span>{edu.location}</span>
+            </div>
+          )}
         </div>
       ))}
     </div>
