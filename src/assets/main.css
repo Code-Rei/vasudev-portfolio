@@ -1565,3 +1565,96 @@ h1, h2, h3, h4 {
     padding: 16px 14px;
   }
 }
+
+
+/* ========================================================
+   FULL-SITE MULTIPLAYER STITCH REVEAL ENGINE
+   ======================================================== */
+.stitch-section-wrapper {
+  position: relative;
+}
+
+.fake-cursors-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.fake-svg-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  will-change: transform, opacity;
+  z-index: 60;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.8));
+}
+
+.cursor-svg-icon {
+  display: block;
+}
+
+.cursor-name-badge {
+  margin-left: 14px;
+  margin-top: -6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cursor-user-name {
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.cursor-user-action {
+  font-weight: 500;
+  opacity: 0.92;
+}
+
+.flex-row-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.bento-card,
+.project-card,
+.exp-box,
+.skill-category-card,
+.contact-card {
+  will-change: clip-path, opacity;
+}
+
+@media (max-width: 640px) {
+  .fake-cursors-layer {
+    display: none !important;
+  }
+  .bento-card,
+  .project-card,
+  .exp-box,
+  .skill-category-card,
+  .contact-card {
+    clip-path: none !important;
+    opacity: 1 !important;
+  }
+  .bento-inner-content,
+  .proj-inner-content,
+  .exp-inner-content,
+  .skill-inner-content,
+  .contact-inner-content {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
