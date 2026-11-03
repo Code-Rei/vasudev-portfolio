@@ -8,7 +8,6 @@ import {
   RiCpuLine,
   RiArrowRightLine,
   RiArrowRightUpLine,
-  RiShieldCheckLine,
   RiCheckLine,
   RiFlashlightLine,
 } from '@remixicon/react';
@@ -324,10 +323,6 @@ export default function HeroBentoSection({ data, onContactClick }) {
                   alt="Vasudev Yadav"
                   className="profile-img"
                 />
-                <div className="profile-badge-overlay">
-                  <RiShieldCheckLine size={12} className="inline-icon text-white" />
-                  <span>Vasudev Yadav</span>
-                </div>
               </div>
             </div>
           </div>
@@ -423,10 +418,6 @@ export default function HeroBentoSection({ data, onContactClick }) {
             <p className="ai-desc">
               Solves tax portal CAPTCHAs via Gemma Multimodal Vision AI with cookiejar session persistence.
             </p>
-
-            <div className="ai-footer">
-              <span className="docker-badge">Docker Sub-25MB</span>
-            </div>
           </div>
         </div>
 
