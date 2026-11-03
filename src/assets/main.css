@@ -228,6 +228,15 @@ body::before {
   transition: all 0.3s ease;
 }
 
+.mobile-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 150;
+}
+
 .mobile-nav {
   position: fixed;
   top: 0;
@@ -280,13 +289,14 @@ body::before {
    BENTO HERO SECTION (100% Desktop Viewport, Zero Scroll)
    ======================================================== */
 .bento-hero-section {
-  padding-top: 68px;
-  padding-bottom: 12px;
+  padding-top: 76px;
+  padding-bottom: 24px;
   position: relative;
   box-sizing: border-box;
+  width: 100%;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1024px) and (min-height: 800px) {
   .bento-hero-section {
     height: calc(100vh - 64px);
     max-height: calc(100vh - 64px);
@@ -294,8 +304,8 @@ body::before {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-top: 68px;
-    padding-bottom: 14px;
+    padding-top: 64px;
+    padding-bottom: 16px;
     overflow: hidden;
   }
 }
@@ -341,9 +351,10 @@ body::before {
   gap: 12px;
   position: relative;
   z-index: 2;
+  width: 100%;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1024px) and (min-height: 800px) {
   .bento-grid {
     height: 100%;
     max-height: calc(100vh - 124px);
@@ -1643,26 +1654,47 @@ body::before {
 /* ========================================================
    RESPONSIVE DESIGN BREAKPOINTS
    ======================================================== */
-@media (max-width: 990px) {
+@media (max-width: 1023px) {
   .desktop-nav {
     display: none;
   }
   .mobile-menu-btn {
     display: flex;
   }
+  .bento-hero-section {
+    padding-top: 80px;
+    padding-bottom: 2rem;
+  }
   .bento-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
   }
-  .bento-card-main,
-  .bento-card-feature,
-  .bento-card-cta {
+  .bento-card-main {
     grid-column: span 2;
+  }
+  .bento-card-feature {
+    grid-column: span 2;
+  }
+  .bento-card-cta {
+    grid-column: span 1;
+  }
+  .project-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+  .skills-matrix-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+  .contact-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
 }
 
 @media (max-width: 768px) {
   .section-title {
-    font-size: 1.85rem;
+    font-size: 1.75rem;
   }
   .project-grid {
     grid-template-columns: 1fr;
@@ -1670,11 +1702,22 @@ body::before {
   .timeline-item {
     gap: 1rem;
   }
+  .timeline-card {
+    width: 100%;
+  }
 }
 
 @media (max-width: 640px) {
+  .container {
+    padding: 0 1rem;
+  }
+  .bento-hero-section {
+    padding-top: 72px;
+    padding-bottom: 1.5rem;
+  }
   .bento-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
   .bento-card-main,
   .bento-card-feature,
@@ -1682,33 +1725,101 @@ body::before {
     grid-column: span 1;
   }
   .main-card-layout {
-    flex-direction: column-reverse;
+    flex-direction: column;
     align-items: flex-start;
+    gap: 16px;
+  }
+  .main-photo-col {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
   }
   .profile-photo-frame {
-    width: 105px;
-    height: 135px;
+    width: 100px;
+    height: 130px;
+    border-radius: 12px;
   }
   .main-title {
-    font-size: 1.8rem;
+    font-size: 1.75rem;
+    line-height: 1.15;
+  }
+  .sub-role {
+    font-size: 0.85rem;
+  }
+  .about-summary {
+    font-size: 0.84rem;
+    line-height: 1.55;
   }
   .card-inner {
     padding: 16px 14px;
   }
-  .bento-card,
-  .project-card,
-  .timeline-card,
-  .skill-category-card,
-  .contact-card {
-    clip-path: none !important;
-    opacity: 1 !important;
+  .filter-tab-bar {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px;
+    padding-bottom: 4px;
   }
-  .bento-inner-content,
-  .proj-inner-content,
-  .exp-inner-content,
-  .skill-inner-content,
-  .contact-inner-content {
-    opacity: 1 !important;
-    transform: none !important;
+  .filter-tab-bar::-webkit-scrollbar {
+    display: none;
+  }
+  .filter-tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+  .skills-matrix-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .contact-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+  .cta-action-row {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+  .cta-action-row button,
+  .cta-action-row a {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-role {
+    display: none;
+  }
+  .header-inner {
+    padding: 0 0.85rem;
+  }
+  .nav-cta-btn {
+    padding: 5px 10px;
+    font-size: 0.74rem;
+  }
+  .status-pill-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .pill-tag-group {
+    gap: 5px;
+  }
+  .zinc-pill {
+    font-size: 0.65rem;
+    padding: 3px 7px;
+  }
+  .hero-status-beacon {
+    font-size: 0.64rem;
+    padding: 4px 8px;
+  }
+  .section-title {
+    font-size: 1.55rem;
+  }
+  .section-lead {
+    font-size: 0.85rem;
   }
 }
