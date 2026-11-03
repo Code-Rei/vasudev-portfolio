@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { RiCheckLine } from '@remixicon/react';
-import TypewriterText from './TypewriterText.jsx';
 
 const SKILL_PEERS = [
   {
@@ -9,32 +8,16 @@ const SKILL_PEERS = [
     name: 'Elena',
     role: 'Lead UX',
     color: '#10B981',
-    action: 'Mapping UX Pillars',
-    startPos: { x: -70, y: -60 },
-  },
-  {
-    id: 's-dev',
-    name: 'Dev',
-    role: 'FinTech Lead',
-    color: '#3B82F6',
-    action: 'Syncing Lending Engine',
-    startPos: { x: '105%', y: -70 },
-  },
-  {
-    id: 's-marcus',
-    name: 'Marcus',
-    role: 'SQL Data',
-    color: '#F59E0B',
-    action: 'Linking Stored Procs',
-    startPos: { x: -70, y: '105%' },
+    action: 'Mapping Competency Matrix',
+    startPos: { x: -80, y: -40 },
   },
   {
     id: 's-alex',
     name: 'Alex',
     role: 'AI Systems',
     color: '#8B5CF6',
-    action: 'Deploying AI Toolchain',
-    startPos: { x: '105%', y: '105%' },
+    action: 'Auditing Toolchains',
+    startPos: { x: '105%', y: -50 },
   },
 ];
 
@@ -49,11 +32,21 @@ export default function SkillsSection({ categories }) {
     const container = containerRef.current;
     if (!container || hasAnimatedRef.current) return;
 
-    // Fast, snappy timeline (~1.0s)
+    // Fast, snappy timeline (~0.9s total)
     const tl = gsap.timeline({
       paused: true,
       onComplete: () => {
         setIsAssembled(true);
+        Object.values(cardRefs.current).forEach((card) => {
+          if (card) {
+            card.style.clipPath = 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)';
+            card.style.opacity = '1';
+          }
+        });
+        SKILL_PEERS.forEach((peer) => {
+          const el = cursorRefs.current[peer.id];
+          if (el) el.style.opacity = '0';
+        });
       },
     });
 
@@ -79,8 +72,8 @@ export default function SkillsSection({ categories }) {
       }
     });
 
-    gsap.set('.skill-inner-content', { opacity: 0, y: 10 });
-    gsap.set('.skill-pill', { scale: 0.7, opacity: 0 });
+    // Content pre-rendered for instant unmasking without delayed typing
+    gsap.set('.skill-inner-content', { opacity: 1 });
 
     // Step 1: Cursors fly in fast
     SKILL_PEERS.forEach((peer, i) => {
@@ -103,7 +96,7 @@ export default function SkillsSection({ categories }) {
             },
             opacity: 1,
             scale: 1,
-            duration: 0.45,
+            duration: 0.4,
             ease: 'power3.out',
           },
           0.05 * i
@@ -111,7 +104,7 @@ export default function SkillsSection({ categories }) {
       }
     });
 
-    // Step 2: Cursors drag open the 4 category cards fast
+    // Step 2: Cursors drag open the 4 skill cards
     categories.forEach((_, i) => {
       const peer = SKILL_PEERS[i % SKILL_PEERS.length];
       const cursorEl = cursorRefs.current[peer.id];
@@ -119,7 +112,7 @@ export default function SkillsSection({ categories }) {
 
       if (cardEl) {
         const drawLabel = `draw-skill-${i}`;
-        tl.addLabel(drawLabel, 0.45 + i * 0.08);
+        tl.addLabel(drawLabel, 0.38 + i * 0.08);
 
         if (cursorEl) {
           tl.to(
@@ -135,7 +128,7 @@ export default function SkillsSection({ categories }) {
                 const pr = container.getBoundingClientRect();
                 return r.bottom - pr.top - 15;
               },
-              duration: 0.5,
+              duration: 0.42,
               ease: 'power2.inOut',
             },
             drawLabel
@@ -147,7 +140,7 @@ export default function SkillsSection({ categories }) {
           {
             clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
             opacity: 1,
-            duration: 0.5,
+            duration: 0.42,
             ease: 'power2.inOut',
           },
           drawLabel
@@ -155,47 +148,21 @@ export default function SkillsSection({ categories }) {
       }
     });
 
-    // Step 3: Card headers fade in
-    tl.to(
-      '.skill-inner-content',
-      {
-        opacity: 1,
-        y: 0,
-        stagger: 0.04,
-        duration: 0.25,
-        ease: 'power2.out',
-      },
-      '+=0.05'
-    );
-
-    // Step 4: Skill pills pop into place fast
-    tl.to(
-      '.skill-pill',
-      {
-        scale: 1,
-        opacity: 1,
-        stagger: 0.015,
-        duration: 0.25,
-        ease: 'back.out(1.8)',
-      },
-      '-=0.1'
-    );
-
-    // Step 5: Cursors fly off
+    // Step 3: Cursors fly off cleanly
     SKILL_PEERS.forEach((peer) => {
       const cursorEl = cursorRefs.current[peer.id];
       if (cursorEl) {
         tl.to(
           cursorEl,
           {
-            y: '-=100',
-            x: '+=70',
+            y: '-=80',
+            x: '+=60',
             opacity: 0,
             scale: 0.7,
-            duration: 0.45,
+            duration: 0.4,
             ease: 'power3.in',
           },
-          '-=0.15'
+          '-=0.1'
         );
       }
     });
@@ -209,7 +176,7 @@ export default function SkillsSection({ categories }) {
           }
         });
       },
-      { threshold: 0.15 }
+      { threshold: 0.12 }
     );
 
     observer.observe(container);
@@ -220,8 +187,23 @@ export default function SkillsSection({ categories }) {
     };
   }, [categories]);
 
+  const handleCardMouseMove = (e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty('--card-x', `${x}px`);
+    card.style.setProperty('--card-y', `${y}px`);
+  };
+
+  const handleCardMouseLeave = (e) => {
+    const card = e.currentTarget;
+    card.style.setProperty('--card-x', `-500px`);
+    card.style.setProperty('--card-y', `-500px`);
+  };
+
   return (
-    <div ref={containerRef} className="skills-categories-grid stitch-section-wrapper">
+    <div ref={containerRef} className="skills-matrix-wrapper stitch-section-wrapper">
       {/* Simulated Fake SVG Cursors Layer */}
       <div className="fake-cursors-layer" aria-hidden="true">
         {SKILL_PEERS.map((peer) => (
@@ -251,7 +233,7 @@ export default function SkillsSection({ categories }) {
               <span className="cursor-user-action">
                 {isAssembled ? (
                   <>
-                    <RiCheckLine size={11} className="inline-icon mr-1" /> Mapped
+                    <RiCheckLine size={11} className="inline-icon mr-1" /> Ready
                   </>
                 ) : (
                   peer.action
@@ -262,40 +244,35 @@ export default function SkillsSection({ categories }) {
         ))}
       </div>
 
-      {categories.map((cat, index) => (
-        <div
-          key={cat.category}
-          ref={(el) => (cardRefs.current[`skill-${index}`] = el)}
-          className="skill-category-card"
-        >
-          <div className="skill-inner-content">
-            <div className="cat-header">
-              <span className="cat-accent-dot" />
-              <h3 className="cat-title">
-                {isAssembled ? (
-                  <TypewriterText
-                    text={cat.category}
-                    speed={16}
-                    delay={index * 80}
-                    isTriggered={isAssembled}
-                  />
-                ) : (
-                  cat.category
-                )}
-              </h3>
-              <span className="cat-count">{cat.skills.length} Skills</span>
-            </div>
+      <div className="skills-matrix-grid">
+        {categories.map((cat, index) => (
+          <div
+            key={cat.category}
+            ref={(el) => (cardRefs.current[`skill-${index}`] = el)}
+            className="skill-category-card"
+            onMouseMove={handleCardMouseMove}
+            onMouseLeave={handleCardMouseLeave}
+          >
+            <div className="skill-inner-content">
+              <div className="cat-header">
+                <div className="cat-title-wrap">
+                  <span className="cat-accent-dot" />
+                  <h3 className="cat-title">{cat.category}</h3>
+                </div>
+                <span className="cat-count">{cat.skills.length} Skills</span>
+              </div>
 
-            <div className="skills-tag-wrap">
-              {cat.skills.map((skill) => (
-                <span key={skill} className="skill-pill">
-                  {skill}
-                </span>
-              ))}
+              <div className="skills-tag-wrap">
+                {cat.skills.map((skill) => (
+                  <span key={skill} className="skill-pill">
+                    {skill}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

@@ -9,9 +9,9 @@ import {
   RiArrowRightLine,
   RiArrowRightUpLine,
   RiShieldCheckLine,
-  RiCheckLine
+  RiCheckLine,
+  RiFlashlightLine,
 } from '@remixicon/react';
-import TypewriterText from './TypewriterText.jsx';
 
 // Simulated Multiplayer Cursors for Hero Bento Assembly
 const HERO_PEERS = [
@@ -60,11 +60,21 @@ export default function HeroBentoSection({ data, onContactClick }) {
     const container = sectionRef.current;
     if (!container || hasAnimatedRef.current) return;
 
-    // Fast, snappy timeline (~1.2s total)
+    // Fast, punchy timeline (~1.0s total)
     const tl = gsap.timeline({
-      delay: 0.1,
+      delay: 0.05,
       onComplete: () => {
         setIsAssembled(true);
+        Object.values(cardRefs.current).forEach((card) => {
+          if (card) {
+            card.style.clipPath = 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)';
+            card.style.opacity = '1';
+          }
+        });
+        HERO_PEERS.forEach((peer) => {
+          const el = cursorRefs.current[peer.id];
+          if (el) el.style.opacity = '0';
+        });
       },
     });
 
@@ -81,7 +91,7 @@ export default function HeroBentoSection({ data, onContactClick }) {
       }
     });
 
-    // Cards start collapsed
+    // Cards start collapsed; contents remain naturally visible inside the unmasking clipPath
     Object.values(cardRefs.current).forEach((card) => {
       if (card) {
         gsap.set(card, {
@@ -91,7 +101,8 @@ export default function HeroBentoSection({ data, onContactClick }) {
       }
     });
 
-    gsap.set('.bento-inner-content', { opacity: 0, y: 10 });
+    // Inner content is fully rendered so it unmasks instantly with the card boundary (no waiting for typewriter)
+    gsap.set('.bento-inner-content', { opacity: 1 });
 
     // Step 1: Cursors fly in fast (0.35s)
     HERO_PEERS.forEach((peer, i) => {
@@ -116,15 +127,15 @@ export default function HeroBentoSection({ data, onContactClick }) {
             },
             opacity: 1,
             scale: 1,
-            duration: 0.45,
+            duration: 0.4,
             ease: 'power3.out',
           },
-          0.05 * i
+          0.04 * i
         );
       }
     });
 
-    // Step 2: Cursors drag across the Bento cards to draw their borders fast (0.5s each, tightly staggered)
+    // Step 2: Cursors drag across the Bento cards to draw their borders fast (0.4s each, tightly staggered)
     const drawPairs = [
       { peerId: 'h-elena', cardKey: 'card-1', label: 'draw-hero-1' },
       { peerId: 'h-marcus', cardKey: 'card-2', label: 'draw-hero-2' },
@@ -139,7 +150,7 @@ export default function HeroBentoSection({ data, onContactClick }) {
       const cardEl = cardRefs.current[pair.cardKey];
 
       if (cursorEl && cardEl) {
-        tl.addLabel(pair.label, 0.45 + idx * 0.08);
+        tl.addLabel(pair.label, 0.38 + idx * 0.07);
 
         tl.to(
           cursorEl,
@@ -154,7 +165,7 @@ export default function HeroBentoSection({ data, onContactClick }) {
               const pr = container.getBoundingClientRect();
               return r.bottom - pr.top - 15;
             },
-            duration: 0.5,
+            duration: 0.42,
             ease: 'power2.inOut',
           },
           pair.label
@@ -165,7 +176,7 @@ export default function HeroBentoSection({ data, onContactClick }) {
           {
             clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
             opacity: 1,
-            duration: 0.5,
+            duration: 0.42,
             ease: 'power2.inOut',
           },
           pair.label
@@ -173,34 +184,21 @@ export default function HeroBentoSection({ data, onContactClick }) {
       }
     });
 
-    // Step 3: Card internal details spring in
-    tl.to(
-      '.bento-inner-content',
-      {
-        opacity: 1,
-        y: 0,
-        stagger: 0.04,
-        duration: 0.35,
-        ease: 'back.out(1.4)',
-      },
-      '+=0.05'
-    );
-
-    // Step 4: Cursors fly off
+    // Step 3: Cursors fly off cleanly
     HERO_PEERS.forEach((peer) => {
       const cursorEl = cursorRefs.current[peer.id];
       if (cursorEl) {
         tl.to(
           cursorEl,
           {
-            y: '-=100',
-            x: '+=80',
+            y: '-=80',
+            x: '+=60',
             opacity: 0,
             scale: 0.7,
-            duration: 0.45,
+            duration: 0.4,
             ease: 'power3.in',
           },
-          '-=0.15'
+          '-=0.1'
         );
       }
     });
@@ -212,13 +210,12 @@ export default function HeroBentoSection({ data, onContactClick }) {
     };
   }, []);
 
-  // Card-specific isolated flashlight spotlight
+  // Card-specific isolated flashlight spotlight (Strictly on the hovered card)
   const handleCardMouseMove = (e) => {
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-
     card.style.setProperty('--card-x', `${x}px`);
     card.style.setProperty('--card-y', `${y}px`);
   };
@@ -231,13 +228,13 @@ export default function HeroBentoSection({ data, onContactClick }) {
 
   return (
     <section id="about" ref={sectionRef} className="bento-hero-section container">
-      {/* Stitch Status Beacon */}
+      {/* Technical Diagnostics Beacon */}
       <div className={`wake-up-hint ${isAssembled ? 'is-active' : ''}`}>
         <span className="pulse-beacon" />
         <span className="hint-text">
           {isAssembled
-            ? 'SYSTEM ARCHITECTURE ASSEMBLED • LIVE WORKSPACE'
-            : 'SIMULATING DISTRIBUTED PEERS ASSEMBLING WORKSPACE...'}
+            ? 'SYS // WORKSPACE ONLINE • 6 MODULES ASSEMBLED'
+            : 'SYS // ORCHESTRATING PEERS • ASSEMBLING BENTO WORKSPACE...'}
         </span>
       </div>
 
@@ -281,7 +278,7 @@ export default function HeroBentoSection({ data, onContactClick }) {
         ))}
       </div>
 
-      {/* Bento Grid */}
+      {/* Bento Grid (Desktop 100% Viewport, Zero Scroll) */}
       <div className="bento-grid">
         {/* Component 1: Main Identity & Profile Portrait (Spans 2 columns, Row 1) */}
         <div
@@ -298,35 +295,14 @@ export default function HeroBentoSection({ data, onContactClick }) {
                 <span className="location-badge">
                   <RiMapPin2Line size={13} className="inline-icon" /> Kota, RJ
                 </span>
+                <span className="sys-badge">SYS // #VY-01</span>
               </div>
 
-              {/* Title with Fast Typewriter Effect */}
-              <h1 className="main-title">
-                {isAssembled ? (
-                  <TypewriterText
-                    text={data.personalDetails.name}
-                    speed={25}
-                    delay={100}
-                    isTriggered={isAssembled}
-                  />
-                ) : (
-                  data.personalDetails.name
-                )}
-              </h1>
+              {/* Title - Instant, crisp, no delayed typewriter */}
+              <h1 className="main-title">{data.personalDetails.name}</h1>
 
-              {/* Subtitle with Typewriter Effect */}
-              <h2 className="sub-role">
-                {isAssembled ? (
-                  <TypewriterText
-                    text={data.personalDetails.title}
-                    speed={12}
-                    delay={400}
-                    isTriggered={isAssembled}
-                  />
-                ) : (
-                  data.personalDetails.title
-                )}
-              </h2>
+              {/* Subtitle */}
+              <h2 className="sub-role">{data.personalDetails.title}</h2>
 
               <p className="about-summary">
                 Pairs front-line operational leadership with <strong>hands-on product design in Figma</strong>, <strong>practical SQL stored procedures</strong>, and <strong>AI-accelerated prototyping</strong> to build and scale FinTech systems.
@@ -413,18 +389,7 @@ export default function HeroBentoSection({ data, onContactClick }) {
               <span className="tech-tag-row">.NET Core • Angular • React Native</span>
             </div>
 
-            <h3 className="feature-title">
-              {isAssembled ? (
-                <TypewriterText
-                  text="Fieldmate+"
-                  speed={20}
-                  delay={550}
-                  isTriggered={isAssembled}
-                />
-              ) : (
-                "Fieldmate+"
-              )}
-            </h3>
+            <h3 className="feature-title">Fieldmate+</h3>
             <p className="feature-desc">
               White-label collection & field ops SaaS for NBFCs and MFIs. Features Android LO app with geo-tagged attendance, real-time UPI QR collections, and floating cash-lock safeguards.
             </p>
@@ -454,18 +419,7 @@ export default function HeroBentoSection({ data, onContactClick }) {
               <span className="go-badge">Go 1.22</span>
             </div>
 
-            <h3 className="ai-title">
-              {isAssembled ? (
-                <TypewriterText
-                  text="GST Vision AI Solver"
-                  speed={18}
-                  delay={600}
-                  isTriggered={isAssembled}
-                />
-              ) : (
-                "GST Vision AI Solver"
-              )}
-            </h3>
+            <h3 className="ai-title">GST Vision AI Solver</h3>
             <p className="ai-desc">
               Solves tax portal CAPTCHAs via Gemma Multimodal Vision AI with cookiejar session persistence.
             </p>

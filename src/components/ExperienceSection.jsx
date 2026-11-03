@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { RiCheckLine } from '@remixicon/react';
-import TypewriterText from './TypewriterText.jsx';
 
 const EXP_PEERS = [
   {
@@ -33,11 +32,21 @@ export default function ExperienceSection({ experience }) {
     const container = containerRef.current;
     if (!container || hasAnimatedRef.current) return;
 
-    // Fast, snappy timeline (~1.1s total)
+    // Snappy timeline (~0.9s total)
     const tl = gsap.timeline({
       paused: true,
       onComplete: () => {
         setIsAssembled(true);
+        Object.values(cardRefs.current).forEach((card) => {
+          if (card) {
+            card.style.clipPath = 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)';
+            card.style.opacity = '1';
+          }
+        });
+        EXP_PEERS.forEach((peer) => {
+          const el = cursorRefs.current[peer.id];
+          if (el) el.style.opacity = '0';
+        });
       },
     });
 
@@ -63,7 +72,8 @@ export default function ExperienceSection({ experience }) {
       }
     });
 
-    gsap.set('.exp-inner-content', { opacity: 0, y: 10 });
+    // Content pre-rendered for instant unmasking without delayed typing
+    gsap.set('.exp-inner-content', { opacity: 1 });
     gsap.set('.timeline-dot', { scale: 0, opacity: 0 });
     gsap.set('.timeline-line', { scaleY: 0, transformOrigin: 'top' });
 
@@ -88,10 +98,10 @@ export default function ExperienceSection({ experience }) {
             },
             opacity: 1,
             scale: 1,
-            duration: 0.45,
+            duration: 0.4,
             ease: 'power3.out',
           },
-          0.06 * i
+          0.05 * i
         );
       }
     });
@@ -99,13 +109,13 @@ export default function ExperienceSection({ experience }) {
     // Step 2: Marcus draws the timeline line & drops milestone dots
     tl.to(
       '.timeline-dot',
-      { scale: 1, opacity: 1, stagger: 0.12, duration: 0.25, ease: 'back.out(2)' },
-      0.35
+      { scale: 1, opacity: 1, stagger: 0.1, duration: 0.25, ease: 'back.out(2)' },
+      0.3
     );
     tl.to(
       '.timeline-line',
-      { scaleY: 1, duration: 0.45, ease: 'power2.out' },
-      0.35
+      { scaleY: 1, duration: 0.4, ease: 'power2.out' },
+      0.3
     );
 
     // Step 3: Cursors drag open the experience cards fast
@@ -116,7 +126,7 @@ export default function ExperienceSection({ experience }) {
 
       if (cardEl) {
         const drawLabel = `draw-exp-${i}`;
-        tl.addLabel(drawLabel, 0.45 + i * 0.1);
+        tl.addLabel(drawLabel, 0.38 + i * 0.09);
 
         if (cursorEl) {
           tl.to(
@@ -132,7 +142,7 @@ export default function ExperienceSection({ experience }) {
                 const pr = container.getBoundingClientRect();
                 return r.bottom - pr.top - 15;
               },
-              duration: 0.5,
+              duration: 0.42,
               ease: 'power2.inOut',
             },
             drawLabel
@@ -144,7 +154,7 @@ export default function ExperienceSection({ experience }) {
           {
             clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
             opacity: 1,
-            duration: 0.5,
+            duration: 0.42,
             ease: 'power2.inOut',
           },
           drawLabel
@@ -152,34 +162,21 @@ export default function ExperienceSection({ experience }) {
       }
     });
 
-    // Step 4: Card contents spring in
-    tl.to(
-      '.exp-inner-content',
-      {
-        opacity: 1,
-        y: 0,
-        stagger: 0.05,
-        duration: 0.35,
-        ease: 'back.out(1.4)',
-      },
-      '+=0.05'
-    );
-
-    // Step 5: Cursors fly off
+    // Step 4: Cursors fly off cleanly
     EXP_PEERS.forEach((peer) => {
       const cursorEl = cursorRefs.current[peer.id];
       if (cursorEl) {
         tl.to(
           cursorEl,
           {
-            y: '-=100',
-            x: '+=80',
+            y: '-=80',
+            x: '+=60',
             opacity: 0,
             scale: 0.7,
-            duration: 0.45,
+            duration: 0.4,
             ease: 'power3.in',
           },
-          '-=0.15'
+          '-=0.1'
         );
       }
     });
@@ -193,7 +190,7 @@ export default function ExperienceSection({ experience }) {
           }
         });
       },
-      { threshold: 0.15 }
+      { threshold: 0.12 }
     );
 
     observer.observe(container);
@@ -203,6 +200,21 @@ export default function ExperienceSection({ experience }) {
       tl.kill();
     };
   }, [experience]);
+
+  const handleCardMouseMove = (e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty('--card-x', `${x}px`);
+    card.style.setProperty('--card-y', `${y}px`);
+  };
+
+  const handleCardMouseLeave = (e) => {
+    const card = e.currentTarget;
+    card.style.setProperty('--card-x', `-500px`);
+    card.style.setProperty('--card-y', `-500px`);
+  };
 
   return (
     <div ref={containerRef} className="timeline-wrapper stitch-section-wrapper">
@@ -235,7 +247,7 @@ export default function ExperienceSection({ experience }) {
               <span className="cursor-user-action">
                 {isAssembled ? (
                   <>
-                    <RiCheckLine size={11} className="inline-icon mr-1" /> Verified
+                    <RiCheckLine size={11} className="inline-icon mr-1" /> Ready
                   </>
                 ) : (
                   peer.action
@@ -246,56 +258,53 @@ export default function ExperienceSection({ experience }) {
         ))}
       </div>
 
-      {experience.map((job, index) => (
-        <div key={index} className="timeline-card">
-          {/* Timeline Connector */}
-          <div className="timeline-indicator">
-            <div className="timeline-dot" />
-            {index !== experience.length - 1 && <div className="timeline-line" />}
-          </div>
+      <div className="timeline-container">
+        <div className="timeline-line" />
 
-          {/* Experience Body */}
-          <div
-            ref={(el) => (cardRefs.current[`exp-${index}`] = el)}
-            className="exp-box"
-          >
-            <div className="exp-inner-content">
-              <div className="exp-header">
-                <div>
+        {experience.map((job, index) => (
+          <div key={job.role} className="timeline-item">
+            {/* Milestone Beacon */}
+            <div className="timeline-dot" />
+
+            {/* Experience Card */}
+            <div
+              ref={(el) => (cardRefs.current[`exp-${index}`] = el)}
+              className="timeline-card"
+              onMouseMove={handleCardMouseMove}
+              onMouseLeave={handleCardMouseLeave}
+            >
+              <div className="exp-inner-content">
+                <div className="card-top-row">
                   <div className="badge-row">
                     <span className="badge-type">{job.badge}</span>
                     <span className="badge-duration">{job.duration}</span>
                   </div>
-
-                  {/* Role Title with Typewriter Effect */}
-                  <h3 className="role-name">
-                    {isAssembled ? (
-                      <TypewriterText
-                        text={job.role}
-                        speed={15}
-                        delay={index * 120}
-                        isTriggered={isAssembled}
-                      />
-                    ) : (
-                      job.role
-                    )}
-                  </h3>
-
-                  <div className="company-name">
-                    <strong>{job.company}</strong> — {job.location}
-                  </div>
+                  <span className="sys-badge-mono">TRACK // #EXP-0{index + 1}</span>
                 </div>
-              </div>
 
-              <ul className="exp-list">
-                {job.highlights.map((hl, hIdx) => (
-                  <li key={hIdx}>{hl}</li>
-                ))}
-              </ul>
+                {/* Role Title - Instant, crisp, bold */}
+                <h3 className="role-name">{job.role}</h3>
+
+                <div className="company-name">
+                  <strong>{job.company}</strong> — {job.location}
+                </div>
+
+                {/* Highlights */}
+                {job.highlights && (
+                  <div className="resp-section">
+                    <div className="resp-header">CORE HIGHLIGHTS & OPERATIONAL ACHIEVEMENTS</div>
+                    <ul className="resp-list">
+                      {job.highlights.map((hl, hIdx) => (
+                        <li key={hIdx}>{hl}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

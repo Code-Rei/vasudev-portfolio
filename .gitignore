@@ -8,3 +8,9 @@ yarn-error.log
 # Build files
 /dist
 /build
+
+# UI Builder Skills (Local References)
+Skills_AI_UI_Builder_Skills-main/
+Skills_AI_UI_Builder_Skills-main
+.vscode
+.DS_Store

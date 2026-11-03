@@ -6,9 +6,8 @@ import {
   RiLinkedinFill,
   RiGithubFill,
   RiArrowRightUpLine,
-  RiCheckLine
+  RiCheckLine,
 } from '@remixicon/react';
-import TypewriterText from './TypewriterText.jsx';
 
 const CONTACT_PEERS = [
   {
@@ -16,32 +15,16 @@ const CONTACT_PEERS = [
     name: 'Elena',
     role: 'Lead UX',
     color: '#10B981',
-    action: 'Linking Direct Mail',
-    startPos: { x: -60, y: -40 },
-  },
-  {
-    id: 'c-sarah',
-    name: 'Sarah',
-    role: 'QA Lead',
-    color: '#EC4899',
-    action: 'Verifying Phone Line',
-    startPos: { x: '50%', y: -60 },
+    action: 'Wiring Direct Channels',
+    startPos: { x: -80, y: -40 },
   },
   {
     id: 'c-dev',
     name: 'Dev',
-    role: 'FinTech Lead',
+    role: 'Tech Lead',
     color: '#3B82F6',
-    action: 'Connecting LinkedIn',
+    action: 'Verifying Telemetry Endpoints',
     startPos: { x: '105%', y: -40 },
-  },
-  {
-    id: 'c-alex',
-    name: 'Alex',
-    role: 'AI Systems',
-    color: '#8B5CF6',
-    action: 'Linking GitHub Repos',
-    startPos: { x: '105%', y: '105%' },
   },
 ];
 
@@ -56,11 +39,21 @@ export default function ContactSection({ details }) {
     const container = containerRef.current;
     if (!container || hasAnimatedRef.current) return;
 
-    // Fast, snappy timeline (~0.9s)
+    // Fast, punchy timeline (~0.8s total)
     const tl = gsap.timeline({
       paused: true,
       onComplete: () => {
         setIsAssembled(true);
+        Object.values(cardRefs.current).forEach((card) => {
+          if (card) {
+            card.style.clipPath = 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)';
+            card.style.opacity = '1';
+          }
+        });
+        CONTACT_PEERS.forEach((peer) => {
+          const el = cursorRefs.current[peer.id];
+          if (el) el.style.opacity = '0';
+        });
       },
     });
 
@@ -86,7 +79,8 @@ export default function ContactSection({ details }) {
       }
     });
 
-    gsap.set('.contact-inner-content', { opacity: 0, y: 10 });
+    // Content pre-rendered for instant unmasking without delayed typing
+    gsap.set('.contact-inner-content', { opacity: 1 });
 
     // Step 1: Cursors fly in fast
     CONTACT_PEERS.forEach((peer, i) => {
@@ -109,7 +103,7 @@ export default function ContactSection({ details }) {
             },
             opacity: 1,
             scale: 1,
-            duration: 0.45,
+            duration: 0.4,
             ease: 'power3.out',
           },
           0.05 * i
@@ -117,41 +111,44 @@ export default function ContactSection({ details }) {
       }
     });
 
-    // Step 2: Cursors drag open the 4 contact cards fast
-    ['0', '1', '2', '3'].forEach((key, i) => {
-      const peer = CONTACT_PEERS[i];
+    // Step 2: Cursors drag open the 4 contact cards
+    const contactKeys = ['contact-0', 'contact-1', 'contact-2', 'contact-3'];
+    contactKeys.forEach((key, i) => {
+      const peer = CONTACT_PEERS[i % CONTACT_PEERS.length];
       const cursorEl = cursorRefs.current[peer.id];
-      const cardEl = cardRefs.current[`contact-${key}`];
+      const cardEl = cardRefs.current[key];
 
-      if (cursorEl && cardEl) {
-        const drawLabel = `draw-contact-${i}`;
-        tl.addLabel(drawLabel, 0.45 + i * 0.08);
+      if (cardEl) {
+        const drawLabel = `draw-${key}`;
+        tl.addLabel(drawLabel, 0.36 + i * 0.08);
 
-        tl.to(
-          cursorEl,
-          {
-            x: () => {
-              const r = cardEl.getBoundingClientRect();
-              const pr = container.getBoundingClientRect();
-              return r.right - pr.left - 15;
+        if (cursorEl) {
+          tl.to(
+            cursorEl,
+            {
+              x: () => {
+                const r = cardEl.getBoundingClientRect();
+                const pr = container.getBoundingClientRect();
+                return r.right - pr.left - 15;
+              },
+              y: () => {
+                const r = cardEl.getBoundingClientRect();
+                const pr = container.getBoundingClientRect();
+                return r.bottom - pr.top - 15;
+              },
+              duration: 0.42,
+              ease: 'power2.inOut',
             },
-            y: () => {
-              const r = cardEl.getBoundingClientRect();
-              const pr = container.getBoundingClientRect();
-              return r.bottom - pr.top - 15;
-            },
-            duration: 0.5,
-            ease: 'power2.inOut',
-          },
-          drawLabel
-        );
+            drawLabel
+          );
+        }
 
         tl.to(
           cardEl,
           {
             clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
             opacity: 1,
-            duration: 0.5,
+            duration: 0.42,
             ease: 'power2.inOut',
           },
           drawLabel
@@ -159,34 +156,21 @@ export default function ContactSection({ details }) {
       }
     });
 
-    // Step 3: Card contents fade in
-    tl.to(
-      '.contact-inner-content',
-      {
-        opacity: 1,
-        y: 0,
-        stagger: 0.04,
-        duration: 0.3,
-        ease: 'back.out(1.4)',
-      },
-      '+=0.05'
-    );
-
-    // Step 4: Cursors fly off
+    // Step 3: Cursors fly off cleanly
     CONTACT_PEERS.forEach((peer) => {
       const cursorEl = cursorRefs.current[peer.id];
       if (cursorEl) {
         tl.to(
           cursorEl,
           {
-            y: '-=100',
-            x: '+=70',
+            y: '-=80',
+            x: '+=60',
             opacity: 0,
             scale: 0.7,
-            duration: 0.45,
+            duration: 0.4,
             ease: 'power3.in',
           },
-          '-=0.15'
+          '-=0.1'
         );
       }
     });
@@ -200,7 +184,7 @@ export default function ContactSection({ details }) {
           }
         });
       },
-      { threshold: 0.15 }
+      { threshold: 0.12 }
     );
 
     observer.observe(container);
@@ -210,6 +194,21 @@ export default function ContactSection({ details }) {
       tl.kill();
     };
   }, []);
+
+  const handleCardMouseMove = (e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty('--card-x', `${x}px`);
+    card.style.setProperty('--card-y', `${y}px`);
+  };
+
+  const handleCardMouseLeave = (e) => {
+    const card = e.currentTarget;
+    card.style.setProperty('--card-x', `-500px`);
+    card.style.setProperty('--card-y', `-500px`);
+  };
 
   return (
     <div ref={containerRef} className="contact-wrapper stitch-section-wrapper">
@@ -242,7 +241,7 @@ export default function ContactSection({ details }) {
               <span className="cursor-user-action">
                 {isAssembled ? (
                   <>
-                    <RiCheckLine size={11} className="inline-icon mr-1" /> Connected
+                    <RiCheckLine size={11} className="inline-icon mr-1" /> Ready
                   </>
                 ) : (
                   peer.action
@@ -253,33 +252,27 @@ export default function ContactSection({ details }) {
         ))}
       </div>
 
-      <div className="contact-intro">
-        <p className="contact-subtext">
-          Looking for an <strong>AI-Native Product Owner</strong> or a <strong>Techno-Functional Business Analyst</strong> with deep microfinance and lending operations experience? Let’s connect.
-        </p>
-      </div>
+      <p className="contact-pitch">
+        Looking for an <strong>AI-Native Product Owner</strong> or a <strong>Techno-Functional Business Analyst</strong> with deep microfinance and lending operations experience? Let’s connect.
+      </p>
 
-      {/* Contact Grid with Official Remix Icons */}
-      <div className="contact-grid">
+      {/* Contact Cards Grid (4 Direct Channels) */}
+      <div className="contact-cards-grid">
         {/* Email Card */}
         <a
           ref={(el) => (cardRefs.current['contact-0'] = el)}
           href={`mailto:${details.email}`}
           className="contact-card"
+          onMouseMove={handleCardMouseMove}
+          onMouseLeave={handleCardMouseLeave}
         >
           <div className="contact-inner-content flex-row-item">
             <div className="contact-icon-box">
               <RiMailLine size={20} className="c-icon" />
             </div>
             <div className="contact-info">
-              <span className="c-label">Direct Email</span>
-              <span className="c-value">
-                {isAssembled ? (
-                  <TypewriterText text={details.email} speed={15} delay={100} isTriggered={isAssembled} />
-                ) : (
-                  details.email
-                )}
-              </span>
+              <span className="c-label">DIRECT EMAIL</span>
+              <span className="c-value">{details.email}</span>
             </div>
             <RiArrowRightUpLine size={18} className="c-arrow" />
           </div>
@@ -290,20 +283,16 @@ export default function ContactSection({ details }) {
           ref={(el) => (cardRefs.current['contact-1'] = el)}
           href={`tel:${details.phone}`}
           className="contact-card"
+          onMouseMove={handleCardMouseMove}
+          onMouseLeave={handleCardMouseLeave}
         >
           <div className="contact-inner-content flex-row-item">
             <div className="contact-icon-box">
               <RiPhoneLine size={20} className="c-icon" />
             </div>
             <div className="contact-info">
-              <span className="c-label">Phone / WhatsApp</span>
-              <span className="c-value">
-                {isAssembled ? (
-                  <TypewriterText text={details.phone} speed={18} delay={150} isTriggered={isAssembled} />
-                ) : (
-                  details.phone
-                )}
-              </span>
+              <span className="c-label">PHONE / WHATSAPP</span>
+              <span className="c-value">{details.phone}</span>
             </div>
             <RiArrowRightUpLine size={18} className="c-arrow" />
           </div>
@@ -316,20 +305,16 @@ export default function ContactSection({ details }) {
           target="_blank"
           rel="noopener noreferrer"
           className="contact-card"
+          onMouseMove={handleCardMouseMove}
+          onMouseLeave={handleCardMouseLeave}
         >
           <div className="contact-inner-content flex-row-item">
             <div className="contact-icon-box">
               <RiLinkedinFill size={20} className="c-icon" />
             </div>
             <div className="contact-info">
-              <span className="c-label">LinkedIn</span>
-              <span className="c-value">
-                {isAssembled ? (
-                  <TypewriterText text={details.linkedin} speed={15} delay={200} isTriggered={isAssembled} />
-                ) : (
-                  details.linkedin
-                )}
-              </span>
+              <span className="c-label">LINKEDIN</span>
+              <span className="c-value">{details.linkedin}</span>
             </div>
             <RiArrowRightUpLine size={18} className="c-arrow" />
           </div>
@@ -342,20 +327,16 @@ export default function ContactSection({ details }) {
           target="_blank"
           rel="noopener noreferrer"
           className="contact-card"
+          onMouseMove={handleCardMouseMove}
+          onMouseLeave={handleCardMouseLeave}
         >
           <div className="contact-inner-content flex-row-item">
             <div className="contact-icon-box">
               <RiGithubFill size={20} className="c-icon" />
             </div>
             <div className="contact-info">
-              <span className="c-label">GitHub</span>
-              <span className="c-value">
-                {isAssembled ? (
-                  <TypewriterText text={details.github} speed={18} delay={250} isTriggered={isAssembled} />
-                ) : (
-                  details.github
-                )}
-              </span>
+              <span className="c-label">GITHUB</span>
+              <span className="c-value">{details.github}</span>
             </div>
             <RiArrowRightUpLine size={18} className="c-arrow" />
           </div>
@@ -363,10 +344,8 @@ export default function ContactSection({ details }) {
       </div>
 
       {/* Minimalist Footer Signature */}
-      <div className="minimal-footer">
-        <span className="footer-meta">
-          © 2026 Vasudev Yadav • Built with React, GSAP Multiplayer Engine & Minimalist Black & Grey Aesthetics
-        </span>
+      <div className="footer-sig">
+        <span>© {new Date().getFullYear()} Vasudev Yadav • Designed with Minimalist Black & Grey Aesthetics</span>
       </div>
     </div>
   );

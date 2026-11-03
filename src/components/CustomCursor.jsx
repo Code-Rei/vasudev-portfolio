@@ -32,6 +32,13 @@ export default function CustomCursor() {
     const onMouseLeave = () => setIsVisible(false);
     const onMouseEnter = () => setIsVisible(true);
 
+    const onMouseOver = (e) => {
+      const interactive = e.target && e.target.closest
+        ? e.target.closest('a, button, .bento-card, .project-card, .timeline-card, .skill-category-card, .contact-card, .filter-tab, .skill-pill, .nav-cta-btn')
+        : null;
+      setIsHovering(!!interactive);
+    };
+
     const render = () => {
       // Smooth lerp physics for trailing halo ring
       ringX += (mouseX - ringX) * 0.18;
@@ -44,37 +51,23 @@ export default function CustomCursor() {
       rafId = requestAnimationFrame(render);
     };
 
-    const attachHoverListeners = () => {
-      const targets = document.querySelectorAll(
-        'a, button, .bento-card, .project-card, .contact-card, .filter-tab, .skill-pill, .bento-hero-section'
-      );
-      targets.forEach((el) => {
-        el.addEventListener('mouseenter', () => setIsHovering(true));
-        el.addEventListener('mouseleave', () => setIsHovering(false));
-      });
-    };
-
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mouseover', onMouseOver);
     document.addEventListener('mouseleave', onMouseLeave);
     document.addEventListener('mouseenter', onMouseEnter);
 
     rafId = requestAnimationFrame(render);
-    attachHoverListeners();
-
-    const t1 = setTimeout(attachHoverListeners, 1000);
-    const t2 = setTimeout(attachHoverListeners, 2500);
 
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mouseover', onMouseOver);
       document.removeEventListener('mouseleave', onMouseLeave);
       document.removeEventListener('mouseenter', onMouseEnter);
       if (rafId) cancelAnimationFrame(rafId);
-      clearTimeout(t1);
-      clearTimeout(t2);
     };
   }, []);
 
