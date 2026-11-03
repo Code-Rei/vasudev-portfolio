@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { portfolioData } from './data.js';
+import { RiCloseLine, RiArrowRightLine } from '@remixicon/react';
 
 // Components
 import CustomCursor from './components/CustomCursor.jsx';
@@ -71,7 +72,7 @@ export default function App() {
               onClick={() => scrollToSection('contact')}
               className="nav-cta-btn"
             >
-              Connect ➔
+              Connect <RiArrowRightLine size={14} className="inline-icon" />
             </button>
 
             {/* Mobile Hamburger Button */}
@@ -91,7 +92,7 @@ export default function App() {
             <div className="mobile-nav-header">
               <span>Navigation</span>
               <button onClick={closeMenu} className="close-drawer" aria-label="Close Navigation">
-                ✕
+                <RiCloseLine size={20} />
               </button>
             </div>
             <ul className="mobile-nav-links">
@@ -108,7 +109,7 @@ export default function App() {
 
       {/* Main Content */}
       <main>
-        {/* Bento Hero Section (Framer Motion Component Assembly + Profile Portrait) */}
+        {/* Bento Hero Section (100% Viewport, Zero Scroll On Desktop, Framer Motion Component Assembly) */}
         <HeroBentoSection
           data={portfolioData}
           onContactClick={() => scrollToSection('contact')}

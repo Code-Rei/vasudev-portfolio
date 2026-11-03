@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 export default function CustomCursor() {
-  const cursorDotRef = useRef(null);
+  const cursorArrowRef = useRef(null);
   const cursorRingRef = useRef(null);
   const [isHovering, setIsHovering] = useState(false);
   const [isClicking, setIsClicking] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Only run on non-touch devices with fine pointers
+    // Only activate for non-touch devices
     if (!window.matchMedia('(pointer: fine)').matches) return;
 
     let mouseX = -100;
@@ -22,8 +22,8 @@ export default function CustomCursor() {
       mouseY = e.clientY;
       setIsVisible(true);
 
-      if (cursorDotRef.current) {
-        cursorDotRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+      if (cursorArrowRef.current) {
+        cursorArrowRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
       }
     };
 
@@ -33,8 +33,9 @@ export default function CustomCursor() {
     const onMouseEnter = () => setIsVisible(true);
 
     const render = () => {
-      ringX += (mouseX - ringX) * 0.16;
-      ringY += (mouseY - ringY) * 0.16;
+      // Smooth lerp physics for trailing halo ring
+      ringX += (mouseX - ringX) * 0.18;
+      ringY += (mouseY - ringY) * 0.18;
 
       if (cursorRingRef.current) {
         cursorRingRef.current.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
@@ -45,7 +46,7 @@ export default function CustomCursor() {
 
     const attachHoverListeners = () => {
       const targets = document.querySelectorAll(
-        'a, button, .bento-card, .project-card, .contact-card, .filter-tab, .skill-pill'
+        'a, button, .bento-card, .project-card, .contact-card, .filter-tab, .skill-pill, .bento-hero-section'
       );
       targets.forEach((el) => {
         el.addEventListener('mouseenter', () => setIsHovering(true));
@@ -79,14 +80,37 @@ export default function CustomCursor() {
 
   return (
     <div className="custom-cursor-container" aria-hidden="true">
+      {/* Big Designer Arrow Pointer */}
       <div
-        ref={cursorDotRef}
-        className={`cursor-dot ${isHovering ? 'is-active' : ''} ${!isVisible ? 'is-hidden' : ''}`}
-      />
+        ref={cursorArrowRef}
+        className={`big-cursor-arrow ${!isVisible ? 'is-hidden' : ''} ${isHovering ? 'is-hovering' : ''}`}
+      >
+        <svg
+          width="26"
+          height="26"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="cursor-svg"
+        >
+          {/* Futuristic precision pointer */}
+          <path
+            d="M3 3L10.5 21L14 14L21 10.5L3 3Z"
+            fill="#FFFFFF"
+            stroke="#000000"
+            strokeWidth="1.5"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+
+      {/* Trailing Fluid Magnetic Halo */}
       <div
         ref={cursorRingRef}
-        className={`cursor-ring ${isHovering ? 'is-hovering' : ''} ${isClicking ? 'is-clicking' : ''} ${!isVisible ? 'is-hidden' : ''}`}
-      />
+        className={`big-cursor-ring ${isHovering ? 'is-hovering' : ''} ${isClicking ? 'is-clicking' : ''} ${!isVisible ? 'is-hidden' : ''}`}
+      >
+        <span className="cursor-ring-pulse" />
+      </div>
     </div>
   );
 }
