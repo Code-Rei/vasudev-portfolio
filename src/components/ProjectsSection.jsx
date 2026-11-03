@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 
 // Technical System IDs for diagnostic credibility
 const SYSTEM_METADATA = {
-  fieldmate: { sysId: 'SYS // #FLDM-9842', status: 'PRODUCTION', latency: '<120ms' },
-  'kamal-connect': { sysId: 'SYS // #KMCN-4019', status: 'PRODUCTION', latency: '40% SPEEDUP' },
-  'gst-captcha': { sysId: 'SYS // #GSTV-7712', status: 'DOCKERIZED', latency: '<250ms' },
-  'route-optimizer': { sysId: 'SYS // #ROUT-5521', status: 'ALGORITHMIC', latency: 'TSP SOLVED' },
-  'kamal-skillup': { sysId: 'SYS // #SKUP-3389', status: 'PRODUCTION', latency: '75% FASTER' },
-  'autonomous-bots': { sysId: 'SYS // #BOTS-1092', status: 'AUTOMATED', latency: '<350ms' },
-  'kamal-analytics': { sysId: 'SYS // #ANLT-6641', status: 'PRODUCTION', latency: 'DAILY MIS' },
+  fieldmate: { sysId: '1', status: 'PRODUCTION', latency: '<120ms' },
+  'kamal-connect': { sysId: '2', status: 'PRODUCTION', latency: '40% SPEEDUP' },
+  'gst-captcha': { sysId: '3', status: 'DOCKERIZED', latency: '<250ms' },
+  'route-optimizer': { sysId: '4', status: 'ALGORITHMIC', latency: 'TSP SOLVED' },
+  'kamal-skillup': { sysId: '5', status: 'PRODUCTION', latency: '75% FASTER' },
+  'autonomous-bots': { sysId: '6', status: 'AUTOMATED', latency: '<350ms' },
+  'kamal-analytics': { sysId: '7', status: 'PRODUCTION', latency: 'DAILY MIS' },
 };
 
 export default function ProjectsSection({ projects }) {

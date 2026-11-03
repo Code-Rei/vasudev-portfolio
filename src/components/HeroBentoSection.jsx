@@ -28,12 +28,6 @@ export default function HeroBentoSection({ data, onContactClick }) {
 
   return (
     <section id="about" className="bento-hero-section container">
-      {/* Subtle Diagnostic Status Beacon */}
-      <div className="hero-status-beacon">
-        <span className="pulse-beacon" />
-        <span>SYS // WORKSPACE ONLINE • 6 MODULES CONNECTED</span>
-      </div>
-
       {/* Bento Grid (Desktop 100% Viewport, Zero Scroll) */}
       <div className="bento-grid">
         {/* Card 1: Main Identity & Profile Portrait (Spans 2 columns, Row 1) */}
@@ -50,7 +44,6 @@ export default function HeroBentoSection({ data, onContactClick }) {
                 <span className="location-badge">
                   <RiMapPin2Line size={13} className="inline-icon" /> Kota, RJ
                 </span>
-                <span className="sys-badge">SYS // #VY-01</span>
               </div>
 
               {/* Title */}
@@ -143,7 +136,7 @@ export default function HeroBentoSection({ data, onContactClick }) {
             </p>
 
             <div className="feature-meta">
-              <span>Guided 4 Developers + 1 QA</span>
+              <span>Guided 4 Developers</span>
               <a href="#projects" className="feature-link">
                 View Architectural Specs <RiArrowRightLine size={14} className="inline-icon" />
               </a>
