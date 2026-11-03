@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { RiCheckLine } from '@remixicon/react';
+import TypewriterText from './TypewriterText.jsx';
 
 const SKILL_PEERS = [
   {
@@ -48,6 +49,7 @@ export default function SkillsSection({ categories }) {
     const container = containerRef.current;
     if (!container || hasAnimatedRef.current) return;
 
+    // Fast, snappy timeline (~1.0s)
     const tl = gsap.timeline({
       paused: true,
       onComplete: () => {
@@ -77,10 +79,10 @@ export default function SkillsSection({ categories }) {
       }
     });
 
-    gsap.set('.skill-inner-content', { opacity: 0, y: 12 });
-    gsap.set('.skill-pill', { scale: 0.8, opacity: 0 });
+    gsap.set('.skill-inner-content', { opacity: 0, y: 10 });
+    gsap.set('.skill-pill', { scale: 0.7, opacity: 0 });
 
-    // Step 1: Cursors fly in
+    // Step 1: Cursors fly in fast
     SKILL_PEERS.forEach((peer, i) => {
       const cursorEl = cursorRefs.current[peer.id];
       if (cursorEl) {
@@ -101,49 +103,51 @@ export default function SkillsSection({ categories }) {
             },
             opacity: 1,
             scale: 1,
-            duration: 0.65,
+            duration: 0.45,
             ease: 'power3.out',
           },
-          0.08 * i
+          0.05 * i
         );
       }
     });
 
-    // Step 2: Cursors drag open the 4 category cards
+    // Step 2: Cursors drag open the 4 category cards fast
     categories.forEach((_, i) => {
       const peer = SKILL_PEERS[i % SKILL_PEERS.length];
       const cursorEl = cursorRefs.current[peer.id];
       const cardEl = cardRefs.current[`skill-${i}`];
 
-      if (cursorEl && cardEl) {
+      if (cardEl) {
         const drawLabel = `draw-skill-${i}`;
-        tl.addLabel(drawLabel, 0.7 + i * 0.12);
+        tl.addLabel(drawLabel, 0.45 + i * 0.08);
 
-        tl.to(
-          cursorEl,
-          {
-            x: () => {
-              const r = cardEl.getBoundingClientRect();
-              const pr = container.getBoundingClientRect();
-              return r.right - pr.left - 15;
+        if (cursorEl) {
+          tl.to(
+            cursorEl,
+            {
+              x: () => {
+                const r = cardEl.getBoundingClientRect();
+                const pr = container.getBoundingClientRect();
+                return r.right - pr.left - 15;
+              },
+              y: () => {
+                const r = cardEl.getBoundingClientRect();
+                const pr = container.getBoundingClientRect();
+                return r.bottom - pr.top - 15;
+              },
+              duration: 0.5,
+              ease: 'power2.inOut',
             },
-            y: () => {
-              const r = cardEl.getBoundingClientRect();
-              const pr = container.getBoundingClientRect();
-              return r.bottom - pr.top - 15;
-            },
-            duration: 0.85,
-            ease: 'power2.inOut',
-          },
-          drawLabel
-        );
+            drawLabel
+          );
+        }
 
         tl.to(
           cardEl,
           {
             clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
             opacity: 1,
-            duration: 0.85,
+            duration: 0.5,
             ease: 'power2.inOut',
           },
           drawLabel
@@ -157,24 +161,24 @@ export default function SkillsSection({ categories }) {
       {
         opacity: 1,
         y: 0,
-        stagger: 0.06,
-        duration: 0.35,
+        stagger: 0.04,
+        duration: 0.25,
         ease: 'power2.out',
       },
       '+=0.05'
     );
 
-    // Step 4: Skill pills pop into place (like stamps)
+    // Step 4: Skill pills pop into place fast
     tl.to(
       '.skill-pill',
       {
         scale: 1,
         opacity: 1,
-        stagger: 0.02,
-        duration: 0.3,
+        stagger: 0.015,
+        duration: 0.25,
         ease: 'back.out(1.8)',
       },
-      '-=0.15'
+      '-=0.1'
     );
 
     // Step 5: Cursors fly off
@@ -188,10 +192,10 @@ export default function SkillsSection({ categories }) {
             x: '+=70',
             opacity: 0,
             scale: 0.7,
-            duration: 0.55,
+            duration: 0.45,
             ease: 'power3.in',
           },
-          '-=0.2'
+          '-=0.15'
         );
       }
     });
@@ -267,7 +271,18 @@ export default function SkillsSection({ categories }) {
           <div className="skill-inner-content">
             <div className="cat-header">
               <span className="cat-accent-dot" />
-              <h3 className="cat-title">{cat.category}</h3>
+              <h3 className="cat-title">
+                {isAssembled ? (
+                  <TypewriterText
+                    text={cat.category}
+                    speed={16}
+                    delay={index * 80}
+                    isTriggered={isAssembled}
+                  />
+                ) : (
+                  cat.category
+                )}
+              </h3>
               <span className="cat-count">{cat.skills.length} Skills</span>
             </div>
 

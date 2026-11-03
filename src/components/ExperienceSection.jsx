@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { RiCheckLine } from '@remixicon/react';
+import TypewriterText from './TypewriterText.jsx';
 
 const EXP_PEERS = [
   {
@@ -32,6 +33,7 @@ export default function ExperienceSection({ experience }) {
     const container = containerRef.current;
     if (!container || hasAnimatedRef.current) return;
 
+    // Fast, snappy timeline (~1.1s total)
     const tl = gsap.timeline({
       paused: true,
       onComplete: () => {
@@ -61,11 +63,11 @@ export default function ExperienceSection({ experience }) {
       }
     });
 
-    gsap.set('.exp-inner-content', { opacity: 0, y: 15 });
+    gsap.set('.exp-inner-content', { opacity: 0, y: 10 });
     gsap.set('.timeline-dot', { scale: 0, opacity: 0 });
     gsap.set('.timeline-line', { scaleY: 0, transformOrigin: 'top' });
 
-    // Step 1: Cursors fly in
+    // Step 1: Cursors fly in fast
     EXP_PEERS.forEach((peer, i) => {
       const cursorEl = cursorRefs.current[peer.id];
       if (cursorEl) {
@@ -86,10 +88,10 @@ export default function ExperienceSection({ experience }) {
             },
             opacity: 1,
             scale: 1,
-            duration: 0.65,
+            duration: 0.45,
             ease: 'power3.out',
           },
-          0.1 * i
+          0.06 * i
         );
       }
     });
@@ -97,50 +99,52 @@ export default function ExperienceSection({ experience }) {
     // Step 2: Marcus draws the timeline line & drops milestone dots
     tl.to(
       '.timeline-dot',
-      { scale: 1, opacity: 1, stagger: 0.2, duration: 0.35, ease: 'back.out(2)' },
-      0.5
+      { scale: 1, opacity: 1, stagger: 0.12, duration: 0.25, ease: 'back.out(2)' },
+      0.35
     );
     tl.to(
       '.timeline-line',
-      { scaleY: 1, duration: 0.6, ease: 'power2.out' },
-      0.5
+      { scaleY: 1, duration: 0.45, ease: 'power2.out' },
+      0.35
     );
 
-    // Step 3: Cursors drag open the experience cards
+    // Step 3: Cursors drag open the experience cards fast
     experience.forEach((_, i) => {
       const peer = EXP_PEERS[i % EXP_PEERS.length];
       const cursorEl = cursorRefs.current[peer.id];
       const cardEl = cardRefs.current[`exp-${i}`];
 
-      if (cursorEl && cardEl) {
+      if (cardEl) {
         const drawLabel = `draw-exp-${i}`;
-        tl.addLabel(drawLabel, 0.75 + i * 0.18);
+        tl.addLabel(drawLabel, 0.45 + i * 0.1);
 
-        tl.to(
-          cursorEl,
-          {
-            x: () => {
-              const r = cardEl.getBoundingClientRect();
-              const pr = container.getBoundingClientRect();
-              return r.right - pr.left - 15;
+        if (cursorEl) {
+          tl.to(
+            cursorEl,
+            {
+              x: () => {
+                const r = cardEl.getBoundingClientRect();
+                const pr = container.getBoundingClientRect();
+                return r.right - pr.left - 15;
+              },
+              y: () => {
+                const r = cardEl.getBoundingClientRect();
+                const pr = container.getBoundingClientRect();
+                return r.bottom - pr.top - 15;
+              },
+              duration: 0.5,
+              ease: 'power2.inOut',
             },
-            y: () => {
-              const r = cardEl.getBoundingClientRect();
-              const pr = container.getBoundingClientRect();
-              return r.bottom - pr.top - 15;
-            },
-            duration: 0.85,
-            ease: 'power2.inOut',
-          },
-          drawLabel
-        );
+            drawLabel
+          );
+        }
 
         tl.to(
           cardEl,
           {
             clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
             opacity: 1,
-            duration: 0.85,
+            duration: 0.5,
             ease: 'power2.inOut',
           },
           drawLabel
@@ -154,11 +158,11 @@ export default function ExperienceSection({ experience }) {
       {
         opacity: 1,
         y: 0,
-        stagger: 0.08,
-        duration: 0.45,
+        stagger: 0.05,
+        duration: 0.35,
         ease: 'back.out(1.4)',
       },
-      '+=0.1'
+      '+=0.05'
     );
 
     // Step 5: Cursors fly off
@@ -172,15 +176,14 @@ export default function ExperienceSection({ experience }) {
             x: '+=80',
             opacity: 0,
             scale: 0.7,
-            duration: 0.55,
+            duration: 0.45,
             ease: 'power3.in',
           },
-          '-=0.2'
+          '-=0.15'
         );
       }
     });
 
-    // IntersectionObserver scroll trigger
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -263,7 +266,21 @@ export default function ExperienceSection({ experience }) {
                     <span className="badge-type">{job.badge}</span>
                     <span className="badge-duration">{job.duration}</span>
                   </div>
-                  <h3 className="role-name">{job.role}</h3>
+
+                  {/* Role Title with Typewriter Effect */}
+                  <h3 className="role-name">
+                    {isAssembled ? (
+                      <TypewriterText
+                        text={job.role}
+                        speed={15}
+                        delay={index * 120}
+                        isTriggered={isAssembled}
+                      />
+                    ) : (
+                      job.role
+                    )}
+                  </h3>
+
                   <div className="company-name">
                     <strong>{job.company}</strong> — {job.location}
                   </div>

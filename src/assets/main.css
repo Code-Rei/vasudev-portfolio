@@ -1658,3 +1658,25 @@ h1, h2, h3, h4 {
     transform: none !important;
   }
 }
+
+
+/* ========================================================
+   TYPEWRITER EFFECT & CARET STYLING
+   ======================================================== */
+.typewriter-container {
+  display: inline;
+}
+
+.typewriter-caret {
+  display: inline-block;
+  color: #38BDF8;
+  font-weight: 300;
+  margin-left: 2px;
+  animation: blinkCaret 0.65s infinite ease-in-out;
+  user-select: none;
+}
+
+@keyframes blinkCaret {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}

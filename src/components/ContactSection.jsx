@@ -8,6 +8,7 @@ import {
   RiArrowRightUpLine,
   RiCheckLine
 } from '@remixicon/react';
+import TypewriterText from './TypewriterText.jsx';
 
 const CONTACT_PEERS = [
   {
@@ -55,6 +56,7 @@ export default function ContactSection({ details }) {
     const container = containerRef.current;
     if (!container || hasAnimatedRef.current) return;
 
+    // Fast, snappy timeline (~0.9s)
     const tl = gsap.timeline({
       paused: true,
       onComplete: () => {
@@ -84,9 +86,9 @@ export default function ContactSection({ details }) {
       }
     });
 
-    gsap.set('.contact-inner-content', { opacity: 0, y: 12 });
+    gsap.set('.contact-inner-content', { opacity: 0, y: 10 });
 
-    // Step 1: Cursors fly in
+    // Step 1: Cursors fly in fast
     CONTACT_PEERS.forEach((peer, i) => {
       const cursorEl = cursorRefs.current[peer.id];
       if (cursorEl) {
@@ -107,15 +109,15 @@ export default function ContactSection({ details }) {
             },
             opacity: 1,
             scale: 1,
-            duration: 0.6,
+            duration: 0.45,
             ease: 'power3.out',
           },
-          0.06 * i
+          0.05 * i
         );
       }
     });
 
-    // Step 2: Cursors drag open the 4 contact cards
+    // Step 2: Cursors drag open the 4 contact cards fast
     ['0', '1', '2', '3'].forEach((key, i) => {
       const peer = CONTACT_PEERS[i];
       const cursorEl = cursorRefs.current[peer.id];
@@ -123,7 +125,7 @@ export default function ContactSection({ details }) {
 
       if (cursorEl && cardEl) {
         const drawLabel = `draw-contact-${i}`;
-        tl.addLabel(drawLabel, 0.65 + i * 0.1);
+        tl.addLabel(drawLabel, 0.45 + i * 0.08);
 
         tl.to(
           cursorEl,
@@ -138,7 +140,7 @@ export default function ContactSection({ details }) {
               const pr = container.getBoundingClientRect();
               return r.bottom - pr.top - 15;
             },
-            duration: 0.75,
+            duration: 0.5,
             ease: 'power2.inOut',
           },
           drawLabel
@@ -149,7 +151,7 @@ export default function ContactSection({ details }) {
           {
             clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
             opacity: 1,
-            duration: 0.75,
+            duration: 0.5,
             ease: 'power2.inOut',
           },
           drawLabel
@@ -163,8 +165,8 @@ export default function ContactSection({ details }) {
       {
         opacity: 1,
         y: 0,
-        stagger: 0.06,
-        duration: 0.35,
+        stagger: 0.04,
+        duration: 0.3,
         ease: 'back.out(1.4)',
       },
       '+=0.05'
@@ -181,7 +183,7 @@ export default function ContactSection({ details }) {
             x: '+=70',
             opacity: 0,
             scale: 0.7,
-            duration: 0.5,
+            duration: 0.45,
             ease: 'power3.in',
           },
           '-=0.15'
@@ -271,7 +273,13 @@ export default function ContactSection({ details }) {
             </div>
             <div className="contact-info">
               <span className="c-label">Direct Email</span>
-              <span className="c-value">{details.email}</span>
+              <span className="c-value">
+                {isAssembled ? (
+                  <TypewriterText text={details.email} speed={15} delay={100} isTriggered={isAssembled} />
+                ) : (
+                  details.email
+                )}
+              </span>
             </div>
             <RiArrowRightUpLine size={18} className="c-arrow" />
           </div>
@@ -289,7 +297,13 @@ export default function ContactSection({ details }) {
             </div>
             <div className="contact-info">
               <span className="c-label">Phone / WhatsApp</span>
-              <span className="c-value">{details.phone}</span>
+              <span className="c-value">
+                {isAssembled ? (
+                  <TypewriterText text={details.phone} speed={18} delay={150} isTriggered={isAssembled} />
+                ) : (
+                  details.phone
+                )}
+              </span>
             </div>
             <RiArrowRightUpLine size={18} className="c-arrow" />
           </div>
@@ -309,7 +323,13 @@ export default function ContactSection({ details }) {
             </div>
             <div className="contact-info">
               <span className="c-label">LinkedIn</span>
-              <span className="c-value">{details.linkedin}</span>
+              <span className="c-value">
+                {isAssembled ? (
+                  <TypewriterText text={details.linkedin} speed={15} delay={200} isTriggered={isAssembled} />
+                ) : (
+                  details.linkedin
+                )}
+              </span>
             </div>
             <RiArrowRightUpLine size={18} className="c-arrow" />
           </div>
@@ -329,7 +349,13 @@ export default function ContactSection({ details }) {
             </div>
             <div className="contact-info">
               <span className="c-label">GitHub</span>
-              <span className="c-value">{details.github}</span>
+              <span className="c-value">
+                {isAssembled ? (
+                  <TypewriterText text={details.github} speed={18} delay={250} isTriggered={isAssembled} />
+                ) : (
+                  details.github
+                )}
+              </span>
             </div>
             <RiArrowRightUpLine size={18} className="c-arrow" />
           </div>
