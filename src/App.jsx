@@ -3,7 +3,6 @@ import { portfolioData } from './data.js';
 import { RiCloseLine, RiArrowRightLine } from '@remixicon/react';
 
 // Components
-import CustomCursor from './components/CustomCursor.jsx';
 import HeroBentoSection from './components/HeroBentoSection.jsx';
 import ProjectsSection from './components/ProjectsSection.jsx';
 import ExperienceSection from './components/ExperienceSection.jsx';
@@ -37,9 +36,6 @@ export default function App() {
 
   return (
     <div className="portfolio-app-root">
-      {/* Interactive Custom Cursor Engine */}
-      <CustomCursor />
-
       {/* Subtle Background Dot Canvas */}
       <div className="stitch-bg-grid" aria-hidden="true" />
 
@@ -109,7 +105,7 @@ export default function App() {
 
       {/* Main Content */}
       <main>
-        {/* Bento Hero Section (100% Viewport, Zero Scroll On Desktop, Framer Motion Component Assembly) */}
+        {/* Bento Hero Section (100% Viewport, Zero Scroll On Desktop) */}
         <HeroBentoSection
           data={portfolioData}
           onContactClick={() => scrollToSection('contact')}

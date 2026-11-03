@@ -26,15 +26,6 @@
   --container-width: 1220px;
 }
 
-/* ========================================================
-   GLOBAL CURSOR SUPPRESSION (Desktop Big Designer Pointer)
-   ======================================================== */
-@media (pointer: fine) {
-  *, *::before, *::after {
-    cursor: none !important;
-  }
-}
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -286,99 +277,6 @@ body::before {
 }
 
 /* ========================================================
-   CUSTOM BIG DESIGNER CURSOR ENGINE
-   ======================================================== */
-.custom-cursor-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 99999;
-  overflow: hidden;
-}
-
-.big-cursor-arrow {
-  position: absolute;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.02s linear;
-  will-change: transform;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.85));
-}
-
-.cursor-svg {
-  display: block;
-  transform: translate(-2px, -2px);
-  transition: transform 0.2s ease;
-}
-
-.big-cursor-arrow.is-hovering .cursor-svg {
-  transform: translate(-2px, -2px) scale(1.15);
-}
-
-.big-cursor-ring {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 48px;
-  height: 48px;
-  margin-top: -24px;
-  margin-left: -24px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 70%);
-  pointer-events: none;
-  transition: width 0.24s cubic-bezier(0.16, 1, 0.3, 1),
-              height 0.24s cubic-bezier(0.16, 1, 0.3, 1),
-              margin 0.24s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.2s ease,
-              background-color 0.2s ease;
-  will-change: transform;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.big-cursor-ring.is-hovering {
-  width: 66px;
-  height: 66px;
-  margin-top: -33px;
-  margin-left: -33px;
-  border-color: rgba(255, 255, 255, 0.85);
-  background: rgba(255, 255, 255, 0.09);
-  backdrop-filter: blur(3px);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
-}
-
-.big-cursor-ring.is-clicking {
-  transform: scale(0.85);
-  border-color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.25);
-}
-
-.cursor-ring-pulse {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.6);
-  opacity: 0.6;
-}
-
-.big-cursor-arrow.is-hidden,
-.big-cursor-ring.is-hidden {
-  opacity: 0;
-}
-
-@media (pointer: coarse) {
-  .custom-cursor-container {
-    display: none !important;
-  }
-}
-
-/* ========================================================
    BENTO HERO SECTION (100% Desktop Viewport, Zero Scroll)
    ======================================================== */
 .bento-hero-section {
@@ -403,142 +301,31 @@ body::before {
 }
 
 /* ========================================================
-   SWARM REBUILD HUD & BLUEPRINT OVERLAY ENGINE
-   (DhvanilPatel/swarm-cursors & Joel Califa tribute)
+   HERO DIAGNOSTIC STATUS
    ======================================================== */
-.swarm-hud {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  padding: 6px 14px;
-  background: rgba(14, 14, 18, 0.75);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  font-family: var(--font-mono, monospace);
-  font-size: 0.72rem;
-  color: #94A3B8;
-  user-select: none;
-  z-index: 30;
-  position: relative;
-}
-
-.swarm-hud-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.swarm-hud-status {
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: #CBD5E1;
-  font-size: 0.7rem;
-}
-
-.swarm-hud-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.swarm-hud-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #E2E8F0;
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 0.7rem;
-  font-family: inherit;
-  font-weight: 600;
-  cursor: pointer;
+.hero-status-beacon {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  transition: all 0.15s ease;
-}
-
-.swarm-hud-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.25);
-  color: #FFFFFF;
-}
-
-.swarm-hud-btn.is-active {
-  background: rgba(13, 153, 255, 0.15);
-  border-color: #0D99FF;
-  color: #60A5FA;
-}
-
-.swarm-overlay-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 45;
-  overflow: visible;
-}
-
-.swarm-badges-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 48;
-}
-
-.swarm-dim-badge {
-  position: absolute;
-  transform: translate(-50%, 0);
-  background: #0D99FF;
-  color: #FFFFFF;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 5px 12px;
+  background: rgba(14, 14, 18, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
   font-family: var(--font-mono, monospace);
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 4px;
-  pointer-events: none;
-  white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-  z-index: 49;
-  letter-spacing: 0.3px;
-  animation: badgePop 0.12s ease-out;
-}
-
-.swarm-spacing-badge {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  background: #F24822;
-  color: #FFFFFF;
-  font-family: var(--font-mono, monospace);
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 3px;
-  pointer-events: none;
-  white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-  z-index: 49;
-  letter-spacing: 0.3px;
-}
-
-@keyframes badgePop {
-  0% { transform: translate(-50%, 0) scale(0.85); opacity: 0; }
-  100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
-}
-
-.swarm-svg-icon {
-  display: block;
-  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.7));
+  font-size: 0.7rem;
+  color: #94A3B8;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .pulse-beacon {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #FFFFFF;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+  background: #10B981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
   animation: pulseGlow 1.8s infinite ease-in-out;
 }
 
@@ -1846,74 +1633,11 @@ body::before {
   color: var(--text-muted);
 }
 
-/* ========================================================
-   FULL-SITE MULTIPLAYER STITCH REVEAL ENGINE
-   ======================================================== */
-.stitch-section-wrapper {
-  position: relative;
-}
-
-.fake-cursors-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 50;
-}
-
-.fake-svg-cursor {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  pointer-events: none;
-  will-change: transform, opacity;
-  z-index: 60;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.8));
-}
-
-.cursor-svg-icon {
-  display: block;
-}
-
-.cursor-name-badge {
-  margin-left: 14px;
-  margin-top: -6px;
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 0.68rem;
-  color: #FFFFFF;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  white-space: nowrap;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.cursor-user-name {
-  font-weight: 800;
-  letter-spacing: 0.2px;
-}
-
-.cursor-user-action {
-  font-weight: 500;
-  opacity: 0.92;
-}
-
 .flex-row-item {
   display: flex;
   align-items: center;
   gap: 14px;
   width: 100%;
-}
-
-.bento-card,
-.project-card,
-.timeline-card,
-.skill-category-card,
-.contact-card {
-  will-change: clip-path, opacity;
 }
 
 /* ========================================================
@@ -1970,16 +1694,6 @@ body::before {
   }
   .card-inner {
     padding: 16px 14px;
-  }
-  .fake-cursors-layer,
-  .swarm-overlay-canvas,
-  .swarm-badges-layer {
-    display: none !important;
-  }
-  .swarm-hud {
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
   }
   .bento-card,
   .project-card,
